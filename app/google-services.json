@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "510860078031",
+    "firebase_url": "https://grupy-eabff.firebaseio.com",
+    "project_id": "grupy-eabff",
+    "storage_bucket": "grupy-eabff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510860078031:android:05a64b68684a6c5c3600ba",
+        "android_client_info": {
+          "package_name": "com.grupy.grupy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "510860078031-8btnegskbbskd4raks2o28d9k1b3r0bf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.grupy.grupy",
+            "certificate_hash": "c8d03f6782a5e582af48a1af03ee112a68d07469"
+          }
+        },
+        {
+          "client_id": "510860078031-26m90na3lq3l94gisn4pv7jdo8ao2pct.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvWd0bdz2kyIVAPAJGOJpB6SSTGQnnUIQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "510860078031-26m90na3lq3l94gisn4pv7jdo8ao2pct.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@drawable/gradient_background"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/textRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="REGISTER NOW"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_marginTop="250dp"
+            android:layout_marginBottom="5dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogIn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="LOG IN"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:backgroundTint="@android:color/transparent"
+            app:cornerRadius="30dp"
+            app:strokeColor="@color/colorBlack"
+            app:strokeWidth="4dp"
+            android:layout_marginHorizontal="55dp"
+            app:rippleColor="@color/colorBlack"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="or continue with"
+            android:gravity="center"
+            android:layout_marginTop="10dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="40dp">
+
+            <ImageButton
+                android:id="@+id/btnGoogle"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/btngoogle"
+                android:scaleType="centerInside"
+                android:background="@color/colorTransparent"/>
+
+            <ImageButton
+                android:id="@+id/btnFacebook"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/btnfacebook"
+                android:scaleType="centerInside"
+                android:layout_marginLeft="40dp"
+                android:background="@color/colorTransparent"/>
+
+            <ImageButton
+                android:id="@+id/btnBlank"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/btnblank"
+                android:scaleType="centerInside"
+                android:layout_marginLeft="40dp"
+                android:background="@color/colorTransparent"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Forgot password?"
+        android:textSize="17sp"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:layout_marginBottom="15dp"/>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
