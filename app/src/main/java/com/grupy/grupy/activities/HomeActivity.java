@@ -1,8 +1,10 @@
-package com.grupy.grupy;
+package com.grupy.grupy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.grupy.grupy.R;
 
 public class HomeActivity extends AppCompatActivity {
 

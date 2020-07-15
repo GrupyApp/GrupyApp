@@ -1,11 +1,10 @@
-package com.grupy.grupy;
+package com.grupy.grupy.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -15,13 +14,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.grupy.grupy.R;
+import com.grupy.grupy.providers.AuthProvider;
 
 public class LogInActivity extends AppCompatActivity {
 
     Button mButtonContinue;
     TextInputEditText mTextInputEmail;
     TextInputEditText mTextInputPassword;
-    FirebaseAuth mAuth;
+    AuthProvider mAuthProvider;
 
 
 
@@ -34,7 +35,7 @@ public class LogInActivity extends AppCompatActivity {
         mTextInputEmail = findViewById(R.id.textInputEmail);
         mTextInputPassword = findViewById(R.id.textInputPassoword);
 
-        mAuth = FirebaseAuth.getInstance();
+        mAuthProvider = new AuthProvider();
 
         mButtonContinue.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,12 +49,13 @@ public class LogInActivity extends AppCompatActivity {
         String email = mTextInputEmail.getText().toString();
         String password = mTextInputPassword.getText().toString();
 
+
         if( email.isEmpty() || password.isEmpty()) {
             Toast.makeText(LogInActivity.this, "Empty field", Toast.LENGTH_LONG).show();
         }
 
         else {
-            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            mAuthProvider.login(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
