@@ -1,11 +1,11 @@
-package com.grupy.grupy;
+package com.grupy.grupy.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -15,6 +15,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.grupy.grupy.R;
+
+import dmax.dialog.SpotsDialog;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -22,6 +25,7 @@ public class LogInActivity extends AppCompatActivity {
     TextInputEditText mTextInputEmail;
     TextInputEditText mTextInputPassword;
     FirebaseAuth mAuth;
+    AlertDialog mDialog;
 
 
 
@@ -42,6 +46,11 @@ public class LogInActivity extends AppCompatActivity {
                 login();
             }
         });
+
+        mDialog = new SpotsDialog.Builder()
+                .setContext(this)
+                .setMessage("Login in")
+                .setCancelable(false).build();
     }
 
     private void login(){
@@ -49,15 +58,18 @@ public class LogInActivity extends AppCompatActivity {
         String password = mTextInputPassword.getText().toString();
 
         if( email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(LogInActivity.this, "Empty field", Toast.LENGTH_LONG).show();
+            Toast.makeText(LogInActivity.this, "Complete login fields", Toast.LENGTH_LONG).show();
         }
 
         else {
+            mDialog.show();
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
+                    mDialog.dismiss();
                     if (task.isSuccessful()) {
                         Intent intent = new Intent(LogInActivity.this, HomeActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                     }
                     else {

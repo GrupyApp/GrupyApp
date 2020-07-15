@@ -1,8 +1,9 @@
-package com.grupy.grupy;
+package com.grupy.grupy.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,24 +13,22 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.grupy.grupy.R;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import dmax.dialog.SpotsDialog;
 
 public class CompleteProfileActivity extends AppCompatActivity {
 
     TextInputEditText mTextInputUsername;
-    TextInputEditText mTextInputEmail;
-    TextInputEditText mTextInputPassword;
-    TextInputEditText mTextInputConfirmPassword;
     Button mButtonFinish;
     FirebaseAuth mAuth;
     FirebaseFirestore mFirestore;
+    AlertDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +47,11 @@ public class CompleteProfileActivity extends AppCompatActivity {
         });
         mFirestore = FirebaseFirestore.getInstance();
 
+        mDialog = new SpotsDialog.Builder()
+                .setContext(this)
+                .setMessage("Creating account")
+                .setCancelable(false).build();
+
     }
 
     private void register(){
@@ -65,11 +69,14 @@ public class CompleteProfileActivity extends AppCompatActivity {
         String id = mAuth.getCurrentUser().getUid();
         Map<String, Object> map = new HashMap<>();
         map.put("username", username);
+        mDialog.show();
         mFirestore.collection("Users").document(id).update(map).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                mDialog.dismiss();
                 if (task.isSuccessful()) {
                     Intent intent = new Intent(CompleteProfileActivity.this, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
                 else {

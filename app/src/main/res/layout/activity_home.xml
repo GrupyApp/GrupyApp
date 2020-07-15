@@ -5,24 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".HomeActivity">
+    tools:context=".activities.HomeActivity">
 
-    <TextView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="HOLA"
-        android:textColor="@color/colorWhite"
-        android:textSize="60dp"
-        android:background="@color/colorBlack"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:translationZ="1dp"/>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/trocampana"
-        android:scaleType="center"
-        />
+        android:layout_height="match_parent"
+        android:id="@+id/container">
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/colorPrimary"
+            app:itemIconTint="@color/colorBlack"
+            app:itemTextColor="@color/colorBlack"
+            app:itemIconSize="40dp"
+            app:labelVisibilityMode="unlabeled"
+            app:menu="@menu/bottom_navigation_menu"/>
+    </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
