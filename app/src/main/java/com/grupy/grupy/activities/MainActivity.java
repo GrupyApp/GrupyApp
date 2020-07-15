@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -37,6 +38,8 @@ import com.grupy.grupy.providers.UserProvider;
 import java.util.HashMap;
 import java.util.Map;
 
+import dmax.dialog.SpotsDialog;
+
 public class MainActivity extends AppCompatActivity {
 
     TextView mTextRegister;
@@ -46,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton mButtonGoogle;
     AuthProvider mAuthProvider;
     UserProvider mUsersProvider;
+    AlertDialog mDialog;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -68,8 +72,16 @@ public class MainActivity extends AppCompatActivity {
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
+
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mUsersProvider = new UserProvider();
+
+        mDialog = new SpotsDialog.Builder()
+                .setContext(this)
+                .setMessage("Wait")
+                .setCancelable(false).build();
+
+        mFirestore = FirebaseFirestore.getInstance();
 
         mButtonGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d("Completed successfully", "firebaseAuthWithGoogle:" + account.getId());
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
@@ -121,14 +132,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
+        mDialog.show();
         mAuthProvider.googleLogin(idToken).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            String id = mAuthProvider.getUid();
+                            String id = mAuth.getCurrentUser().getUid();
                             checkUserExist(id);
 
                         } else {
+                            mDialog.dismiss();
                             // If sign in fails, display a message to the user.
                             Log.w("Error", "signInWithCredential:failure", task.getException());
                             Toast.makeText(MainActivity.this, "Unable to register with google", Toast.LENGTH_LONG);
@@ -144,13 +157,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
+                    mDialog.dismiss();
                     Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
                 else {
                     String email = mAuthProvider.getEmail();
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("email", email);
                     User user = new User();
                     user.setEmail(email);
                     user.setId(id);
@@ -159,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 Intent intent = new Intent(MainActivity.this, CompleteProfileActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                             }
                             else {

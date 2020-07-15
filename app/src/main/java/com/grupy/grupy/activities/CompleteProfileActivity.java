@@ -3,6 +3,7 @@ package com.grupy.grupy.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -22,15 +23,15 @@ import com.grupy.grupy.providers.UserProvider;
 import java.util.HashMap;
 import java.util.Map;
 
+import dmax.dialog.SpotsDialog;
+
 public class CompleteProfileActivity extends AppCompatActivity {
 
     TextInputEditText mTextInputUsername;
-    TextInputEditText mTextInputEmail;
-    TextInputEditText mTextInputPassword;
-    TextInputEditText mTextInputConfirmPassword;
     Button mButtonFinish;
     AuthProvider mAuthProvider;
     UserProvider mUserProvider;
+    AlertDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,11 @@ public class CompleteProfileActivity extends AppCompatActivity {
                 register();
             }
         });
+
+        mDialog = new SpotsDialog.Builder()
+                .setContext(this)
+                .setMessage("Creating account")
+                .setCancelable(false).build();
 
     }
 
@@ -67,11 +73,14 @@ public class CompleteProfileActivity extends AppCompatActivity {
         User user = new User();
         user.setUsername(username);
         user.setId(id);
-       mUserProvider.update(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+        mDialog.show();
+        mUserProvider.update(user).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                mDialog.dismiss();
                 if (task.isSuccessful()) {
                     Intent intent = new Intent(CompleteProfileActivity.this, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
                 else {
