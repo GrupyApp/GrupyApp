@@ -15,6 +15,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.grupy.grupy.R;
+import com.grupy.grupy.models.User;
+import com.grupy.grupy.providers.AuthProvider;
+import com.grupy.grupy.providers.UserProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +29,8 @@ public class CompleteProfileActivity extends AppCompatActivity {
     TextInputEditText mTextInputPassword;
     TextInputEditText mTextInputConfirmPassword;
     Button mButtonFinish;
-    FirebaseAuth mAuth;
-    FirebaseFirestore mFirestore;
+    AuthProvider mAuthProvider;
+    UserProvider mUserProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +40,14 @@ public class CompleteProfileActivity extends AppCompatActivity {
         mTextInputUsername = findViewById(R.id.textInputUsername);
         mButtonFinish = findViewById(R.id.btnFinish);
 
-        mAuth = FirebaseAuth.getInstance();
+        mAuthProvider = new AuthProvider();
+        mUserProvider = new UserProvider();
         mButtonFinish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 register();
             }
         });
-        mFirestore = FirebaseFirestore.getInstance();
 
     }
 
@@ -60,10 +63,11 @@ public class CompleteProfileActivity extends AppCompatActivity {
     }
 
     private void updateUser(final String username) {
-        String id = mAuth.getCurrentUser().getUid();
-        Map<String, Object> map = new HashMap<>();
-        map.put("username", username);
-        mFirestore.collection("Users").document(id).update(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+        String id = mAuthProvider.getUid();
+        User user = new User();
+        user.setUsername(username);
+        user.setId(id);
+       mUserProvider.update(user).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
