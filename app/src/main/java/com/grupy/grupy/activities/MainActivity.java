@@ -81,8 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage("Wait")
                 .setCancelable(false).build();
 
-        mFirestore = FirebaseFirestore.getInstance();
-
         mButtonGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -137,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            String id = mAuth.getCurrentUser().getUid();
+                            String id = mAuthProvider.getUid();
                             checkUserExist(id);
 
                         } else {
