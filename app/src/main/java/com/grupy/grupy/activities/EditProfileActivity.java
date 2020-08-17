@@ -26,6 +26,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.UploadTask;
 import com.grupy.grupy.R;
+import com.grupy.grupy.fragments.ProfileFragment;
 import com.grupy.grupy.models.Post;
 import com.grupy.grupy.models.User;
 import com.grupy.grupy.providers.AuthProvider;
@@ -227,6 +228,9 @@ public class EditProfileActivity extends AppCompatActivity {
                 else {
                     mDialog.dismiss();
                     Toast.makeText(EditProfileActivity.this, "Image could not be saved.", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(EditProfileActivity.this, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                 }
             }
         });
@@ -260,6 +264,9 @@ public class EditProfileActivity extends AppCompatActivity {
                 else {
                     mDialog.dismiss();
                     Toast.makeText(EditProfileActivity.this, "Image could not be saved.", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(EditProfileActivity.this, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                 }
             }
         });
@@ -275,9 +282,15 @@ public class EditProfileActivity extends AppCompatActivity {
                 mDialog.dismiss();
                 if (task.isSuccessful()) {
                     Toast.makeText(EditProfileActivity.this, "Profile saved.", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(EditProfileActivity.this, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                 }
                 else {
                     Toast.makeText(EditProfileActivity.this, "Profile could not be saved.", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(EditProfileActivity.this, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                 }
             }
         });
@@ -338,7 +351,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 ".jpg",
                 storageDir
         );  //Aqui sota aniria if per cada request code
-        if (requestCode == GALLERY_REQUEST_CODE_COVER) {
+        if (requestCode == GALLERY_REQUEST_CODE_PROFILE) {
             mPhotoPath = "file:" + photoFile.getAbsolutePath();
             mAbsolutePhotoPath = photoFile.getAbsolutePath();
         }
@@ -346,11 +359,11 @@ public class EditProfileActivity extends AppCompatActivity {
             mPhotoPath2 = "file:" + photoFile.getAbsolutePath();
             mAbsolutePhotoPath2 = photoFile.getAbsolutePath();
         }
-        else if (requestCode == PHOTO_REQUEST_CODE_COVER) {
-            mPhotoPath2 = "file:" + photoFile.getAbsolutePath();
-            mAbsolutePhotoPath2 = photoFile.getAbsolutePath();
+        else if (requestCode == PHOTO_REQUEST_CODE_PROFILE) {
+            mPhotoPath = "file:" + photoFile.getAbsolutePath();
+            mAbsolutePhotoPath = photoFile.getAbsolutePath();
         }
-        else if (requestCode == GALLERY_REQUEST_CODE_COVER) {
+        else if (requestCode == PHOTO_REQUEST_CODE_COVER) {
             mPhotoPath2 = "file:" + photoFile.getAbsolutePath();
             mAbsolutePhotoPath2 = photoFile.getAbsolutePath();
         }
@@ -383,7 +396,7 @@ public class EditProfileActivity extends AppCompatActivity {
             try {
                 mPhotoFile2 = null;
                 mImageFile2 = FileUtil.from(this, data.getData());
-                mImageViewCover.setImageBitmap(BitmapFactory.decodeFile(mImageFile.getAbsolutePath()));
+                mImageViewCover.setImageBitmap(BitmapFactory.decodeFile(mImageFile2.getAbsolutePath()));
             } catch (Exception e) {
                 Log.d( "Error", "Error: " + e.getMessage());
                 Toast.makeText(this, "An error has ocurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
