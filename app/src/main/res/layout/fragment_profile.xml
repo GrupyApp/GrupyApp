@@ -5,8 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ProfileFragment"
     android:fitsSystemWindows="true"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginBottom="50dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -73,22 +72,14 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_gravity="bottom|center"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_gravity="bottom"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Miriam"
-                        android:textColor="@color/colorBlack"
-                        android:textStyle="bold"
-                        android:textSize="25dp"/>
-
-                </LinearLayout>
+                    android:text="Miriam"
+                    android:textColor="@color/colorBlack"
+                    android:textStyle="bold"
+                    android:textSize="25dp"/>
 
                 <LinearLayout
                     android:id="@+id/linearLayoutEditProfile"
@@ -124,8 +115,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_marginTop="20dp">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -157,7 +147,7 @@
                 app:rippleColor="@color/colorRed"
                 app:strokeColor="@color/colorRed"
                 app:strokeWidth="4dp"
-                android:layout_marginTop="100dp"/>
+                android:layout_marginTop="200dp"/>
 
         </LinearLayout>
 
