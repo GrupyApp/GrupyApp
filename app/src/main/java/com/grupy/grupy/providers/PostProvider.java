@@ -22,4 +22,8 @@ public class PostProvider {
     public Query getAll() {
         return mCollection.orderBy("name", Query.Direction.DESCENDING);
     }
+
+    public Query getGroupByUser(String id) {
+        return mCollection.whereEqualTo("idUser", id);
+    }
 }
