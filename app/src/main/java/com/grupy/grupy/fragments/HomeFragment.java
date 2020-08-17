@@ -36,6 +36,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_home, container, false);
+
         mPost = mView.findViewById(R.id.btnPost);
         setHasOptionsMenu(true);
         mAuthProvider = new AuthProvider();

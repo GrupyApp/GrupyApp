@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Grupy</string>
+
+    <string name="transitionName_picture">transitionnamepicture</string>
 </resources>

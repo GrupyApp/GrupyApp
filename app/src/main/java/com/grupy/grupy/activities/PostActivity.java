@@ -3,11 +3,16 @@ package com.grupy.grupy.activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,14 +31,18 @@ import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.ImageProvider;
 import com.grupy.grupy.providers.PostProvider;
 import com.grupy.grupy.utils.FileUtil;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+
+import dmax.dialog.SpotsDialog;
 
 public class PostActivity extends AppCompatActivity {
 
     ImageView mImageViewPost;
     File mImageFile;
-    private final int GALLERY_REQUEST_CODE = 1;
     Button mButtonCreate;
     ImageProvider mImageProvider;
     PostProvider mPostProvider;
@@ -42,7 +51,16 @@ public class PostActivity extends AppCompatActivity {
     TextInputEditText mTextInputDescription;
     String mName = "";
     String mDescription = "";
+    AlertDialog mDialog;
     //string category;
+    AlertDialog.Builder mBuilderSelector;
+    CharSequence options[];
+
+    private final int GALLERY_REQUEST_CODE = 1;
+    private final int PHOTO_REQUEST_CODE = 2;
+    String mAbsolutePhotoPath;
+    String mPhotoPath;
+    File mPhotoFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +77,15 @@ public class PostActivity extends AppCompatActivity {
         mPostProvider = new PostProvider();
         mAuthProvider = new AuthProvider();
 
+        mDialog = new SpotsDialog.Builder()
+                .setContext(this)
+                .setMessage("Wait")
+                .setCancelable(false).build();
+
+        mBuilderSelector = new AlertDialog.Builder(this);
+        mBuilderSelector.setTitle("Choose an option");
+        options = new CharSequence[] {"Gallery", "Take picture"};
+
         mButtonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,9 +96,59 @@ public class PostActivity extends AppCompatActivity {
         mImageViewPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openGallery();
+                selectOptionImage();
             }
         });
+    }
+
+    private void selectOptionImage() {
+
+        mBuilderSelector.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                if (i == 0) {
+                    openGallery(GALLERY_REQUEST_CODE);
+                }
+                else if (i == 1) {
+                    takePhoto(PHOTO_REQUEST_CODE);
+                }
+            }
+        });
+
+        mBuilderSelector.show();
+
+    }
+
+    private void takePhoto(int requestCode) {
+
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createPhotoFile(requestCode);
+            } catch (Exception e) {
+                Toast.makeText(this, "An error occurred" + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+
+            if (photoFile != null) {
+                Uri photoUri = FileProvider.getUriForFile(PostActivity.this, "com.grupy.grupy", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(takePictureIntent, PHOTO_REQUEST_CODE);
+            }
+        }
+
+    }
+
+    private File createPhotoFile(int requestCode) throws IOException {
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File photoFile = File.createTempFile(
+                new Date() + "_photo",
+                ".jpg",
+                storageDir
+        );  //Aqui sota aniria if per cada request code
+        mPhotoPath = "file:" + photoFile.getAbsolutePath();
+        mAbsolutePhotoPath = photoFile.getAbsolutePath();
+        return photoFile;
     }
 
     private void clickCreate() {
@@ -80,18 +157,22 @@ public class PostActivity extends AppCompatActivity {
         mDescription = mTextInputDescription.getText().toString();
 
         if (!mName.isEmpty() && !mDescription.isEmpty()) {
-            if (mImageFile != null) {
-                saveImage();
+            if (mImageFile != null) {          //Image from Gallery
+                saveImage(mImageFile);
+            }
+            else if (mPhotoFile != null) {     //Image from Camera
+                saveImage(mPhotoFile);
             }
         }
         else {
-            Toast.makeText(this, "Completed all fields", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Complete all fields", Toast.LENGTH_LONG).show();
         }
 
     }
 
-    private void saveImage() {
-        mImageProvider.save(PostActivity.this, mImageFile).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+    private void saveImage(File imageFile) {
+        mDialog.show();
+        mImageProvider.save(PostActivity.this, imageFile).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -108,6 +189,7 @@ public class PostActivity extends AppCompatActivity {
                             mPostProvider.save(post).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> taskSave) {
+                                    mDialog.dismiss();
                                     if (taskSave.isSuccessful()) {
                                         Toast.makeText(PostActivity.this, "Group saved", Toast.LENGTH_LONG).show();
                                         Intent intent = new Intent(PostActivity.this, HomeActivity.class);
@@ -123,13 +205,14 @@ public class PostActivity extends AppCompatActivity {
                     });
                 }
                 else {
+                    mDialog.dismiss();
                     Toast.makeText(PostActivity.this, "Image could not be saved.", Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
-    private void openGallery() {
+    private void openGallery(int GALLERY_REQUEST_CODE) {
         Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
         galleryIntent.setType("image/*");
         startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
@@ -138,14 +221,23 @@ public class PostActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //Select image from Gallery
         if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK) {
             try {
+                mPhotoFile = null;
                 mImageFile = FileUtil.from(this, data.getData());
                 mImageViewPost.setImageBitmap(BitmapFactory.decodeFile(mImageFile.getAbsolutePath()));
             } catch (Exception e) {
                 Log.d( "Error", "Error: " + e.getMessage());
                 Toast.makeText(this, "An error has ocurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
             }
+        }
+
+        //Take Picture
+        if (requestCode == PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
+            mImageFile = null;
+            mPhotoFile = new File(mAbsolutePhotoPath);
+            Picasso.with(PostActivity.this).load(mPhotoPath).into(mImageViewPost);
         }
     }
 }
