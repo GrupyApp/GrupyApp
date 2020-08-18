@@ -3,6 +3,7 @@ package com.grupy.grupy.providers;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseExceptionMapper;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.grupy.grupy.models.Post;
@@ -25,5 +26,9 @@ public class PostProvider {
 
     public Query getGroupByUser(String id) {
         return mCollection.whereEqualTo("idUser", id);
+    }
+
+    public Task<DocumentSnapshot> getGroupById (String id) {
+        return mCollection.document(id).get();
     }
 }
