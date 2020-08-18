@@ -61,6 +61,7 @@ public class PostActivity extends AppCompatActivity {
     //string category;
     AlertDialog.Builder mBuilderSelector;
     CharSequence options[];
+    List<Bitmap> bitmaps;
 
     private final int GALLERY_REQUEST_CODE = 1;
     private final int PHOTO_REQUEST_CODE = 2;
@@ -91,6 +92,8 @@ public class PostActivity extends AppCompatActivity {
         mBuilderSelector = new AlertDialog.Builder(this);
         mBuilderSelector.setTitle("Choose an option");
         options = new CharSequence[] {"Gallery", "Take picture"};
+
+        bitmaps = new ArrayList<>();
 
         mButtonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,12 +166,12 @@ public class PostActivity extends AppCompatActivity {
         mDescription = mTextInputDescription.getText().toString();
 
         if (!mName.isEmpty() && !mDescription.isEmpty()) {
-            if (mImageFile != null) {          //Image from Gallery
-                saveImage(mImageFile);
+            if (!bitmaps.isEmpty()) {          //Image from Gallery
+                saveGroup(bitmaps);
             }
-            else if (mPhotoFile != null) {     //Image from Camera
+            /*else if (mPhotoFile != null) {     //Image from Camera
                 saveImage(mPhotoFile);
-            }
+            }*/
         }
         else {
             Toast.makeText(this, "Complete all fields", Toast.LENGTH_LONG).show();
@@ -176,6 +179,52 @@ public class PostActivity extends AppCompatActivity {
 
     }
 
+    private void saveGroup(final List<Bitmap> bitmapList) {
+        mDialog.show();
+        final Post post = new Post();
+        for (int i = 0; i < bitmapList.size(); i++) {
+            final int j = i;
+            mImageProvider.save2(bitmapList.get(i)).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        mImageProvider.getmStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String url = uri.toString();
+                                post.addImageUrl(url);
+                                if (j == bitmapList.size()-1) {
+                                    post.setName(mName);
+                                    post.setDescription(mDescription);
+                                    post.setIdUser(mAuthProvider.getUid());
+                                    mPostProvider.save(post).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> taskSave) {
+                                            mDialog.dismiss();
+                                            if (taskSave.isSuccessful()) {
+                                                Toast.makeText(PostActivity.this, "Group saved", Toast.LENGTH_LONG).show();
+                                                Intent intent = new Intent(PostActivity.this, HomeActivity.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                startActivity(intent);
+                                            }
+                                            else {
+                                                Toast.makeText(PostActivity.this, "Unable to save the group", Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        mDialog.dismiss();
+                        Toast.makeText(PostActivity.this, "Image could not be saved.", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
+    }
+    /*
     private void saveImage(File imageFile) {
         mDialog.show();
         mImageProvider.save(PostActivity.this, imageFile).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -216,7 +265,7 @@ public class PostActivity extends AppCompatActivity {
                 }
             }
         });
-    }
+    }*/
 
     private void openGallery(int GALLERY_REQUEST_CODE) {
         Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -231,7 +280,6 @@ public class PostActivity extends AppCompatActivity {
         //Select image from Gallery
         if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK) {
 
-            final List<Bitmap> bitmaps = new ArrayList<>();
             ClipData clipData = data.getClipData();
             if (clipData != null) {
                 for (int i = 0; i < clipData.getItemCount(); i++) {
@@ -257,7 +305,7 @@ public class PostActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-
+            /*
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -276,7 +324,7 @@ public class PostActivity extends AppCompatActivity {
                         }
                     }
                 }
-            }).start();
+            }).start();*/
             /*try {
                 mPhotoFile = null;
                 mImageFile = FileUtil.from(this, data.getData());
