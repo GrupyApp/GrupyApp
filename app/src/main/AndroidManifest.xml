@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.UserProfileActivity"></activity>
+        <activity android:name=".activities.UserProfileActivity"
+            android:parentActivityName=".activities.GroupDetailActivity"/>
         <activity android:name=".activities.GroupDetailActivity" />
         <activity android:name=".activities.EditProfileActivity" />
 
