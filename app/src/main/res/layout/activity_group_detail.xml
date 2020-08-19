@@ -15,29 +15,44 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
-            <com.smarteist.autoimageslider.SliderView
-                android:id="@+id/imageSlider"
+            
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                app:sliderAnimationDuration="600"
-                app:sliderAutoCycleDirection="back_and_forth"
-                app:sliderAutoCycleEnabled="true"
-                app:sliderIndicatorAnimationDuration="600"
-                app:sliderIndicatorGravity="center_horizontal|bottom"
-                app:sliderIndicatorMargin="15dp"
-                app:sliderIndicatorOrientation="horizontal"
-                app:sliderIndicatorPadding="3dp"
-                app:sliderIndicatorRadius="2dp"
-                app:sliderIndicatorSelectedColor="#5A5A5A"
-                app:sliderIndicatorUnselectedColor="#FFF"
-                app:sliderScrollTimeInSec="1"
-                app:sliderStartAutoCycle="true" />
+                android:layout_height="320dp">
+
+                <com.smarteist.autoimageslider.SliderView
+                    android:id="@+id/imageSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    app:sliderAnimationDuration="600"
+                    app:sliderAutoCycleDirection="back_and_forth"
+                    app:sliderAutoCycleEnabled="true"
+                    app:sliderIndicatorAnimationDuration="600"
+                    app:sliderIndicatorGravity="center_horizontal|bottom"
+                    app:sliderIndicatorMargin="15dp"
+                    app:sliderIndicatorOrientation="horizontal"
+                    app:sliderIndicatorPadding="3dp"
+                    app:sliderIndicatorRadius="2dp"
+                    app:sliderIndicatorSelectedColor="#5A5A5A"
+                    app:sliderIndicatorUnselectedColor="#FFF"
+                    app:sliderScrollTimeInSec="1"
+                    app:sliderStartAutoCycle="true"/>
+                
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_chat_white"
+                    android:layout_gravity="right|bottom"
+                    android:layout_marginRight="15dp"/>
+
+            </FrameLayout>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:layout_margin="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginBottom="20dp"
                 android:elevation="3dp">
 
                 <LinearLayout
@@ -47,6 +62,7 @@
                     android:gravity="center">
 
                     <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/circleImageProfile"
                         android:layout_width="55dp"
                         android:layout_height="55dp"
                         android:src="@drawable/cover_image"
@@ -61,6 +77,7 @@
                         android:gravity="center">
 
                         <TextView
+                            android:id="@+id/textViewUsername"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Username"
@@ -69,9 +86,10 @@
                     </LinearLayout>
 
                     <Button
+                        android:id="@+id/btnShowProfile"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Edit Profile"
+                        android:text="View Profile"
                         android:layout_marginLeft="10dp"
                         android:background="@drawable/button_border"
                         android:textColor="@color/colorAccent"
@@ -82,6 +100,7 @@
             </androidx.cardview.widget.CardView>
 
             <TextView
+                android:id="@+id/textViewName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Group Name"
@@ -110,6 +129,7 @@
                         android:src="@drawable/ic_home_menu"/>
 
                     <TextView
+                        android:id="@+id/textViewn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sports"

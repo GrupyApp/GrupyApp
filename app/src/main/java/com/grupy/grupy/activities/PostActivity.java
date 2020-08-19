@@ -67,7 +67,7 @@ public class PostActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        mImageViewPost = findViewById(R.id.imageViewPost);
+        mImageViewPost = findViewById(R.id.imageViewPost1);
         mButtonCreate = findViewById(R.id.btnCreate);
 
         mTextInputName = findViewById(R.id.textInputName);
