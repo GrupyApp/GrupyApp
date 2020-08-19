@@ -59,16 +59,10 @@ public class GroupDetailActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
-                    if (documentSnapshot.contains("image1")) {
-                        String image1 = documentSnapshot.getString("image1");
+                    if (documentSnapshot.contains("image")) {
+                        String image1 = documentSnapshot.getString("image");
                         SliderItem item = new SliderItem();
                         item.setImageUrl(image1);
-                        mSliderItems.add(item);
-                    }
-                    if (documentSnapshot.contains("image2")) {
-                        String image2 = documentSnapshot.getString("image2");
-                        SliderItem item = new SliderItem();
-                        item.setImageUrl(image2);
                         mSliderItems.add(item);
                     }
                     instanceSlider();

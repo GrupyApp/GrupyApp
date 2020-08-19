@@ -6,10 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.app.AlertDialog;
-import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,12 +34,8 @@ import com.grupy.grupy.utils.FileUtil;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 
@@ -220,7 +214,6 @@ public class PostActivity extends AppCompatActivity {
 
     private void openGallery(int GALLERY_REQUEST_CODE) {
         Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         galleryIntent.setType("image/*");
         startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
     }
@@ -230,61 +223,14 @@ public class PostActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         //Select image from Gallery
         if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK) {
-
-            final List<Bitmap> bitmaps = new ArrayList<>();
-            ClipData clipData = data.getClipData();
-            if (clipData != null) {
-                for (int i = 0; i < clipData.getItemCount(); i++) {
-                    Uri imageUri = clipData.getItemAt(i).getUri();
-
-                    try {
-                        InputStream is = getContentResolver().openInputStream(imageUri);
-                        Bitmap bitmap = BitmapFactory.decodeStream(is);
-                        bitmaps.add(bitmap);
-
-
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-                Uri imageUri = data.getData();
-                try {
-                    InputStream is = getContentResolver().openInputStream(imageUri);
-                    Bitmap bitmap = BitmapFactory.decodeStream(is);
-                    bitmaps.add(bitmap);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    for (final Bitmap b: bitmaps) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mImageViewPost.setImageBitmap(b);
-                            }
-                        });
-                        try {
-                            Thread.sleep(3000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }).start();
-            /*try {
+            try {
                 mPhotoFile = null;
                 mImageFile = FileUtil.from(this, data.getData());
                 mImageViewPost.setImageBitmap(BitmapFactory.decodeFile(mImageFile.getAbsolutePath()));
             } catch (Exception e) {
                 Log.d( "Error", "Error: " + e.getMessage());
                 Toast.makeText(this, "An error has ocurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
-            }*/
+            }
         }
 
         //Take Picture
