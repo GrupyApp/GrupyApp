@@ -35,7 +35,10 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 
@@ -48,6 +51,7 @@ public class PostActivity extends AppCompatActivity {
     ImageView mImageViewPost5;
     ImageView mImageViewPost6;
 
+    /*
     File mImageFile1;
     File mImageFile2;
     File mImageFile3;
@@ -55,6 +59,16 @@ public class PostActivity extends AppCompatActivity {
     File mImageFile5;
     File mImageFile6;
 
+    File mPhotoFile1;
+    File mPhotoFile2;
+    File mPhotoFile3;
+    File mPhotoFile4;
+    File mPhotoFile5;
+    File mPhotoFile6;
+    */
+
+    List<File> mPhotoList;
+    List<File> mImageList;
     Button mButtonCreate;
     ImageProvider mImageProvider;
     PostProvider mPostProvider;
@@ -93,13 +107,10 @@ public class PostActivity extends AppCompatActivity {
     String mPhotoPath5;
     String mPhotoPath6;
 
+    String mUrl = "";
+
     //vector de files
-    File mPhotoFile1;
-    File mPhotoFile2;
-    File mPhotoFile3;
-    File mPhotoFile4;
-    File mPhotoFile5;
-    File mPhotoFile6;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +123,23 @@ public class PostActivity extends AppCompatActivity {
         mImageViewPost4 = findViewById(R.id.imageViewPost4);
         mImageViewPost5 = findViewById(R.id.imageViewPost5);
         mImageViewPost6 = findViewById(R.id.imageViewPost6);
+
+        mImageList = new ArrayList<File>();
+        mImageList.add(null);
+        mImageList.add(null);
+        mImageList.add(null);
+        mImageList.add(null);
+        mImageList.add(null);
+        mImageList.add(null);
+
+        mPhotoList = new ArrayList<File>();
+        mPhotoList.add(null);
+        mPhotoList.add(null);
+        mPhotoList.add(null);
+        mPhotoList.add(null);
+        mPhotoList.add(null);
+        mPhotoList.add(null);
+
 
         mButtonCreate = findViewById(R.id.btnCreate);
 
@@ -313,12 +341,7 @@ public class PostActivity extends AppCompatActivity {
         mDescription = mTextInputDescription.getText().toString();
 
         if (!mName.isEmpty() && !mDescription.isEmpty()) {
-            if (mImageFile1 != null) {          //Image from Gallery
-                saveImage(mImageFile);
-            }
-            else if (mPhotoFile1 != null) {     //Image from Camera
-                saveImage(mPhotoFile);
-            }
+            saveGroup();
         }
         else {
             Toast.makeText(this, "Complete all fields", Toast.LENGTH_LONG).show();
@@ -327,7 +350,63 @@ public class PostActivity extends AppCompatActivity {
     }
 
     //do
-    private void saveImage(final File mImageFile1, final File mImageFile2) {
+    private void saveGroup() {
+        mDialog.show();
+        Post post = new Post();
+        for (int i = 0; i < mImageList.size(); i++) {
+            if (mImageList.get(i) != null) {
+                saveImage(mImageList.get(i));
+                post.setImage1(mUrl);
+                Toast.makeText(PostActivity.this, mUrl, Toast.LENGTH_LONG).show();
+            }
+            else if(mPhotoList.get(i) != null) {
+                saveImage(mPhotoList.get(i));
+                post.addPhoto(mUrl);
+            }
+        }
+
+        post.setName(mName);
+        post.setDescription(mDescription);
+        post.setIdUser(mAuthProvider.getUid());
+
+        mPostProvider.save(post).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> taskSave) {
+                mDialog.dismiss();
+                if (taskSave.isSuccessful()) {
+                    //Toast.makeText(PostActivity.this, "Group saved", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(PostActivity.this, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+                else {
+                    Toast.makeText(PostActivity.this, "Unable to save the group", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void saveImage(final File image) {
+        mImageProvider.save(PostActivity.this, image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if (task.isSuccessful()) {
+                    mImageProvider.getmStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            mUrl = uri.toString();
+                        }
+                    });
+                } else {
+                    mDialog.dismiss();
+                    Toast.makeText(PostActivity.this, "Image could not be saved.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+/*
+    private void saveImage2(final File mImageFile1, final File mImageFile2) {
         mDialog.show();
         //with image provider in orther to save it
         mImageProvider.save(PostActivity.this, mImageFile1).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -352,25 +431,6 @@ public class PostActivity extends AppCompatActivity {
                                                 Post post = new Post();
                                                 post.setImage1(url1);
                                                 post.setImage2(url2);
-                                                post.setName(mName);
-                                                post.setDescription(mDescription);
-                                                post.setIdUser(mAuthProvider.getUid());
-
-                                                mPostProvider.save(post).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> taskSave) {
-                                                        mDialog.dismiss();
-                                                        if (taskSave.isSuccessful()) {
-                                                            Toast.makeText(PostActivity.this, "Group saved", Toast.LENGTH_LONG).show();
-                                                            Intent intent = new Intent(PostActivity.this, HomeActivity.class);
-                                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                            startActivity(intent);
-                                                        }
-                                                        else {
-                                                            Toast.makeText(PostActivity.this, "Unable to save the group", Toast.LENGTH_LONG).show();
-                                                        }
-                                                    }
-                                                });
                                             }
                                         });
                                     } else {
@@ -392,6 +452,8 @@ public class PostActivity extends AppCompatActivity {
         });
     }
 
+ */
+
     private void openGallery(int request_code) {
         Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
         galleryIntent.setType("image/*");
@@ -404,9 +466,9 @@ public class PostActivity extends AppCompatActivity {
         //Select image from Gallery
         if (requestCode == GALLERY_REQUEST_CODE1 && resultCode == RESULT_OK) {
             try {
-                mPhotoFile1 = null;
-                mImageFile1 = FileUtil.from(this, data.getData());
-                mImageViewPost1.setImageBitmap(BitmapFactory.decodeFile(mImageFile1.getAbsolutePath()));
+                mPhotoList.set(0,null);
+                mImageList.set(0,FileUtil.from(this, data.getData()));
+                mImageViewPost1.setImageBitmap(BitmapFactory.decodeFile(mImageList.get(0).getAbsolutePath()));
             } catch (Exception e) {
                 Log.d( "Error", "Error: " + e.getMessage());
                 Toast.makeText(this, "An error has ocurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -415,9 +477,9 @@ public class PostActivity extends AppCompatActivity {
 
         if (requestCode == GALLERY_REQUEST_CODE2 && resultCode == RESULT_OK) {
             try {
-                mPhotoFile2 = null;
-                mImageFile2 = FileUtil.from(this, data.getData());
-                mImageViewPost2.setImageBitmap(BitmapFactory.decodeFile(mImageFile2.getAbsolutePath()));
+                mPhotoList.set(1,null);
+                mImageList.set(1,FileUtil.from(this, data.getData()));
+                mImageViewPost2.setImageBitmap(BitmapFactory.decodeFile(mImageList.get(1).getAbsolutePath()));
             } catch (Exception e) {
                 Log.d( "Error", "Error: " + e.getMessage());
                 Toast.makeText(this, "An error has ocurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -425,9 +487,9 @@ public class PostActivity extends AppCompatActivity {
         }
         if (requestCode == GALLERY_REQUEST_CODE3 && resultCode == RESULT_OK) {
             try {
-                mPhotoFile3 = null;
-                mImageFile3 = FileUtil.from(this, data.getData());
-                mImageViewPost3.setImageBitmap(BitmapFactory.decodeFile(mImageFile3.getAbsolutePath()));
+                mPhotoList.set(2,null);
+                mImageList.set(2,FileUtil.from(this, data.getData()));
+                mImageViewPost3.setImageBitmap(BitmapFactory.decodeFile(mImageList.get(2).getAbsolutePath()));
             } catch (Exception e) {
                 Log.d( "Error", "Error: " + e.getMessage());
                 Toast.makeText(this, "An error has ocurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -435,9 +497,9 @@ public class PostActivity extends AppCompatActivity {
         }
         if (requestCode == GALLERY_REQUEST_CODE4 && resultCode == RESULT_OK) {
             try {
-                mPhotoFile4 = null;
-                mImageFile4 = FileUtil.from(this, data.getData());
-                mImageViewPost4.setImageBitmap(BitmapFactory.decodeFile(mImageFile4.getAbsolutePath()));
+                mPhotoList.set(3,null);
+                mImageList.set(3,FileUtil.from(this, data.getData()));
+                mImageViewPost4.setImageBitmap(BitmapFactory.decodeFile(mImageList.get(3).getAbsolutePath()));
             } catch (Exception e) {
                 Log.d( "Error", "Error: " + e.getMessage());
                 Toast.makeText(this, "An error has ocurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -445,9 +507,9 @@ public class PostActivity extends AppCompatActivity {
         }
         if (requestCode == GALLERY_REQUEST_CODE5 && resultCode == RESULT_OK) {
             try {
-                mPhotoFile5 = null;
-                mImageFile5 = FileUtil.from(this, data.getData());
-                mImageViewPost5.setImageBitmap(BitmapFactory.decodeFile(mImageFile5.getAbsolutePath()));
+                mPhotoList.set(4,null);
+                mImageList.set(4,FileUtil.from(this, data.getData()));
+                mImageViewPost5.setImageBitmap(BitmapFactory.decodeFile(mImageList.get(4).getAbsolutePath()));
             } catch (Exception e) {
                 Log.d( "Error", "Error: " + e.getMessage());
                 Toast.makeText(this, "An error has ocurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -455,9 +517,9 @@ public class PostActivity extends AppCompatActivity {
         }
         if (requestCode == GALLERY_REQUEST_CODE6 && resultCode == RESULT_OK) {
             try {
-                mPhotoFile6 = null;
-                mImageFile6 = FileUtil.from(this, data.getData());
-                mImageViewPost6.setImageBitmap(BitmapFactory.decodeFile(mImageFile6.getAbsolutePath()));
+                mPhotoList.set(5,null);
+                mImageList.set(5,FileUtil.from(this, data.getData()));
+                mImageViewPost6.setImageBitmap(BitmapFactory.decodeFile(mImageList.get(5).getAbsolutePath()));
             } catch (Exception e) {
                 Log.d( "Error", "Error: " + e.getMessage());
                 Toast.makeText(this, "An error has ocurred:" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -466,33 +528,33 @@ public class PostActivity extends AppCompatActivity {
 
         //Take Picture OJO S'HA AL MATEIX METODE PER TAL DE CRIDAR EL ONACTIVITY 3:46
         if (requestCode == PHOTO_REQUEST_CODE1 && resultCode == RESULT_OK) {
-            mImageFile1 = null;
-            mPhotoFile1 = new File(mAbsolutePhotoPath1);
+            mImageList.set(0,null);
+            mPhotoList.set(0,new File(mAbsolutePhotoPath1));
             Picasso.with(PostActivity.this).load(mPhotoPath1).into(mImageViewPost1);
         }
         if (requestCode == PHOTO_REQUEST_CODE2 && resultCode == RESULT_OK) {
-            mImageFile2 = null;
-            mPhotoFile2 = new File(mAbsolutePhotoPath2);
+            mImageList.set(1,null);
+            mPhotoList.set(1,new File(mAbsolutePhotoPath2));
             Picasso.with(PostActivity.this).load(mPhotoPath2).into(mImageViewPost2);
         }
         if (requestCode == PHOTO_REQUEST_CODE3 && resultCode == RESULT_OK) {
-            mImageFile3 = null;
-            mPhotoFile3 = new File(mAbsolutePhotoPath3);
+            mImageList.set(2,null);
+            mPhotoList.set(2,new File(mAbsolutePhotoPath3));
             Picasso.with(PostActivity.this).load(mPhotoPath3).into(mImageViewPost3);
         }
         if (requestCode == PHOTO_REQUEST_CODE4 && resultCode == RESULT_OK) {
-            mImageFile4 = null;
-            mPhotoFile4 = new File(mAbsolutePhotoPath4);
+            mImageList.set(3,null);
+            mPhotoList.set(3,new File(mAbsolutePhotoPath4));
             Picasso.with(PostActivity.this).load(mPhotoPath4).into(mImageViewPost4);
         }
         if (requestCode == PHOTO_REQUEST_CODE5 && resultCode == RESULT_OK) {
-            mImageFile5 = null;
-            mPhotoFile5 = new File(mAbsolutePhotoPath5);
+            mImageList.set(4,null);
+            mPhotoList.set(4,new File(mAbsolutePhotoPath5));
             Picasso.with(PostActivity.this).load(mPhotoPath5).into(mImageViewPost5);
         }
         if (requestCode == PHOTO_REQUEST_CODE6 && resultCode == RESULT_OK) {
-            mImageFile6 = null;
-            mPhotoFile6 = new File(mAbsolutePhotoPath6);
+            mImageList.set(5,null);
+            mPhotoList.set(5,new File(mAbsolutePhotoPath6));
             Picasso.with(PostActivity.this).load(mPhotoPath6).into(mImageViewPost6);
         }
     }

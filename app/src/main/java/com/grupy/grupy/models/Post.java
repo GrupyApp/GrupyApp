@@ -1,16 +1,18 @@
 package com.grupy.grupy.models;
 
+import android.widget.Toast;
+
 public class Post {
 
     private String id;
     private String name;
     private String description;
-    private String image1;
-    private String image2;
-    private String image3;
-    private String image4;
-    private String image5;
-    private String image6;
+    private String image1 = "";
+    private String image2 = "";
+    private String image3 = "";
+    private String image4 = "";
+    private String image5 = "";
+    private String image6 = "";
     private String IdUser;
 
 
@@ -110,6 +112,27 @@ public class Post {
 
     public void setIdUser(String idUser) {
         IdUser = idUser;
+    }
+
+    public void  addPhoto(String url) {
+        if (this.image1.isEmpty()) {
+            setImage1(url);
+        }
+        else if (this.image2.isEmpty()) {
+            setImage2(url);
+        }
+        else if (this.image3.isEmpty()) {
+            setImage3(url);
+        }
+        else if (this.image4.isEmpty()) {
+            setImage4(url);
+        }
+        else if (this.image5.isEmpty()) {
+            setImage5(url);
+        }
+        else if (this.image6.isEmpty()) {
+            setImage6(url);
+        }
     }
 
 
