@@ -1,6 +1,7 @@
 package com.grupy.grupy.fragments;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,18 +11,30 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.grupy.grupy.R;
 import com.grupy.grupy.activities.EditProfileActivity;
 import com.grupy.grupy.activities.MainActivity;
+import com.grupy.grupy.adapters.MyPostAdapter;
+import com.grupy.grupy.adapters.PostAdapter;
+import com.grupy.grupy.models.Post;
 import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.PostProvider;
 import com.grupy.grupy.providers.UserProvider;
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -35,12 +48,16 @@ public class ProfileFragment extends Fragment {
     LinearLayout mLinearLayoutEditProfile;
     TextView mTextViewUsername;
     TextView mTextViewGroupNumber;
+    TextView mTextViewGroupExist;
     ImageView mImageViewCover;
     CircleImageView mCircleImageViewProfile;
+    RecyclerView mRecyclerView;
 
     AuthProvider mAuthProvider;
     UserProvider mUserProvider;
     PostProvider mPostProvider;
+
+    MyPostAdapter mMyPostAdapter;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -54,8 +71,13 @@ public class ProfileFragment extends Fragment {
 
         mTextViewUsername = mView.findViewById(R.id.textViewUsername);
         mTextViewGroupNumber = mView.findViewById(R.id.textViewGroupNumber);
+        mTextViewGroupExist = mView.findViewById(R.id.textViewGroupExist);
         mImageViewCover = mView.findViewById(R.id.imageViewCover);
         mCircleImageViewProfile = mView.findViewById(R.id.circleImageViewProfile);
+
+        mRecyclerView = mView.findViewById(R.id.recyclerViewMyGroup);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
         mButtonFinish = mView.findViewById(R.id.btnLogOut);
         mLinearLayoutEditProfile = mView.findViewById(R.id.linearLayoutEditProfile);
@@ -80,8 +102,46 @@ public class ProfileFragment extends Fragment {
 
         getUser();
         getGroupNumber();
+        checkIfExistGroup();
 
         return mView;
+    }
+
+    private void checkIfExistGroup() {
+        mPostProvider.getGroupByUser(mAuthProvider.getUid()).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException error) {
+                if (mAuthProvider.getUserSession() != null) {
+                    int numberGroup = queryDocumentSnapshots.size();
+                    if (numberGroup > 0) {
+                        mTextViewGroupExist.setText("Groups");
+                        mTextViewGroupExist.setTextColor(Color.GRAY);
+                    }
+                    else {
+                        mTextViewGroupExist.setText("No groups");
+                        mTextViewGroupExist.setTextColor(Color.GRAY);
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Query query = mPostProvider.getGroupByUser(mAuthProvider.getUid());
+        FirestoreRecyclerOptions<Post> options = new FirestoreRecyclerOptions.Builder<Post>()
+                .setQuery(query, Post.class)
+                .build();
+        mMyPostAdapter = new MyPostAdapter(options, getContext());
+        mRecyclerView.setAdapter(mMyPostAdapter);
+        mMyPostAdapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mMyPostAdapter.stopListening();
     }
 
     private void goToEditProfile() {

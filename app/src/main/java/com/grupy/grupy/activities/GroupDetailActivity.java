@@ -2,8 +2,14 @@ package com.grupy.grupy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -11,12 +17,16 @@ import com.grupy.grupy.R;
 import com.grupy.grupy.adapters.SliderAdapter;
 import com.grupy.grupy.models.SliderItem;
 import com.grupy.grupy.providers.PostProvider;
+import com.grupy.grupy.providers.UserProvider;
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
 import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class GroupDetailActivity extends AppCompatActivity {
 
@@ -24,8 +34,19 @@ public class GroupDetailActivity extends AppCompatActivity {
     SliderAdapter mSliderAdapter;
     List<SliderItem> mSliderItems = new ArrayList<>();
     PostProvider mPostProvider;
+    UserProvider mUserProvider;
 
     String mExtraPostId;
+
+    TextView mTextViewName;
+    TextView mTextViewDescription;
+    TextView mTextViewUsername;
+    TextView mTextViewNameCategory;
+    ImageView mImageViewCategory;
+    CircleImageView mCircleImageViewProfile;
+    Button mButtonShowProfile;
+
+    String mIdUser = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +54,38 @@ public class GroupDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_group_detail);
 
         mPostProvider = new PostProvider();
+        mUserProvider = new UserProvider();
 
         mSliderView = findViewById(R.id.imageSlider);
+        mTextViewName = findViewById(R.id.textViewName);
+        mTextViewDescription = findViewById(R.id.textViewDescription);
+        mTextViewUsername = findViewById(R.id.textViewUsername);
+        mTextViewNameCategory = findViewById(R.id.textViewCategoryName);
+        mImageViewCategory = findViewById(R.id.imageViewCategory);
+        mCircleImageViewProfile = findViewById(R.id.circleImageViewProfile);
+        mButtonShowProfile = findViewById(R.id.btnShowProfile);
 
         mExtraPostId = getIntent().getStringExtra("id");
 
         getGroup();
+
+        mButtonShowProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToShowProfile();
+            }
+        });
+    }
+
+    private void goToShowProfile() {
+        if (!mIdUser.equals("")) {
+            Intent intent = new Intent(GroupDetailActivity.this, UserProfileActivity.class);
+            intent.putExtra("idUser", mIdUser);
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this, "Cannot load user.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void instanceSlider() {
@@ -65,7 +112,37 @@ public class GroupDetailActivity extends AppCompatActivity {
                         item.setImageUrl(image1);
                         mSliderItems.add(item);
                     }
+                    if (documentSnapshot.contains("name")) {
+                        String name = documentSnapshot.getString("name");
+                        mTextViewName.setText(name.toUpperCase());
+                    }
+                    if (documentSnapshot.contains("description")) {
+                        String description = documentSnapshot.getString("description");
+                        mTextViewDescription.setText(description);
+                    }
+                    if (documentSnapshot.contains("idUser")) {
+                        mIdUser = documentSnapshot.getString("idUser");
+                        getUserInfo(mIdUser);
+                    }
                     instanceSlider();
+                }
+            }
+        });
+    }
+
+    private void getUserInfo(String idUser) {
+        mUserProvider.getUser(idUser).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    if (documentSnapshot.contains("username")) {
+                        String username = documentSnapshot.getString("username");
+                        mTextViewUsername.setText(username);
+                    }
+                    if (documentSnapshot.contains("image_profile")) {
+                        String imageProfile = documentSnapshot.getString("image_profile");
+                        Picasso.with(GroupDetailActivity.this).load(imageProfile).into(mCircleImageViewProfile);
+                    }
                 }
             }
         });
