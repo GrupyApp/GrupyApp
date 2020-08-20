@@ -352,41 +352,54 @@ public class PostActivity extends AppCompatActivity {
     //do
     private void saveGroup() {
         mDialog.show();
-        Post post = new Post();
+        mImageList.removeAll(Collections.singleton(null));
+        final Post post = new Post();
         for (int i = 0; i < mImageList.size(); i++) {
-            if (mImageList.get(i) != null) {
-                saveImage(mImageList.get(i));
-                post.setImage1(mUrl);
-                Toast.makeText(PostActivity.this, mUrl, Toast.LENGTH_LONG).show();
-            }
-            else if(mPhotoList.get(i) != null) {
-                saveImage(mPhotoList.get(i));
-                post.addPhoto(mUrl);
-            }
+            final int j = i;
+            mImageProvider.save(PostActivity.this, mImageList.get(i)).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        mImageProvider.getmStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                post.addPhoto(uri.toString());
+                                Toast.makeText(PostActivity.this, String.valueOf(j), Toast.LENGTH_LONG).show();
+                                if (j ==  mImageList.size()-1) {
+                                    post.setName(mName);
+                                    post.setDescription(mDescription);
+                                    post.setIdUser(mAuthProvider.getUid());
+
+                                    mPostProvider.save(post).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> taskSave) {
+                                            Toast.makeText(PostActivity.this, "xdzfdxfdfxdfsfdsfdsf", Toast.LENGTH_LONG).show();
+                                            mDialog.dismiss();
+                                            if (taskSave.isSuccessful()) {
+                                                //Toast.makeText(PostActivity.this, "Group saved", Toast.LENGTH_LONG).show();
+                                                Intent intent = new Intent(PostActivity.this, HomeActivity.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                startActivity(intent);
+                                            }
+                                            else {
+                                                Toast.makeText(PostActivity.this, "Unable to save the group", Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    } else {
+                        mDialog.dismiss();
+                        Toast.makeText(PostActivity.this, "Image could not be saved.", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
         }
-
-        post.setName(mName);
-        post.setDescription(mDescription);
-        post.setIdUser(mAuthProvider.getUid());
-
-        mPostProvider.save(post).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> taskSave) {
-                mDialog.dismiss();
-                if (taskSave.isSuccessful()) {
-                    //Toast.makeText(PostActivity.this, "Group saved", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(PostActivity.this, HomeActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                }
-                else {
-                    Toast.makeText(PostActivity.this, "Unable to save the group", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
     }
 
     private void saveImage(final File image) {
+        final Post post = new Post();
         mImageProvider.save(PostActivity.this, image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
@@ -394,7 +407,7 @@ public class PostActivity extends AppCompatActivity {
                     mImageProvider.getmStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            mUrl = uri.toString();
+                            post.addPhoto(uri.toString());
                         }
                     });
                 } else {
@@ -403,6 +416,10 @@ public class PostActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void Url(String url) {
+        mUrl = url;
     }
 
 /*
