@@ -18,9 +18,9 @@ public class ImageProvider {
         mStorage = FirebaseStorage.getInstance().getReference();
     }
 
-    public UploadTask save(Context context, File file) {
+    public UploadTask save(Context context, File file, String i) {
         byte[] imageByte = CompressorBitmapImage.getImage(context, file.getPath(), 500, 500);
-        StorageReference storage = mStorage.child(new Date() + ".jpg");
+        StorageReference storage = FirebaseStorage.getInstance().getReference().child(new Date() + "_" + i + ".jpg");  //possar raandom
         mStorage = storage;
         UploadTask task = storage.putBytes(imageByte);
         return task;

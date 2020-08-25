@@ -36,9 +36,9 @@ public class PostAdapter extends FirestoreRecyclerAdapter<Post, PostAdapter.View
 
         holder.textViewTitle.setText(post.getName());
         holder.textViewDescription.setText(post.getDescription());
-        if (post.getImage() != null) {
-            if (!post.getImage().isEmpty()) {
-                Picasso.with(context).load(post.getImage()).into(holder.imageViewPost);
+        if (post.getImage1() != null) {
+            if (!post.getImage1().isEmpty()) {
+                Picasso.with(context).load(post.getImage1()).into(holder.imageViewPost);
             }
         }
         holder.viewHolder.setOnClickListener(new View.OnClickListener() {

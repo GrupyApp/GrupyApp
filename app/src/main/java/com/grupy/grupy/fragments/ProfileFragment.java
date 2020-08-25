@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,7 +53,9 @@ public class ProfileFragment extends Fragment {
     TextView mTextViewGroupExist;
     ImageView mImageViewCover;
     CircleImageView mCircleImageViewProfile;
+
     RecyclerView mRecyclerView;
+    Toolbar mToolbar;
 
     AuthProvider mAuthProvider;
     UserProvider mUserProvider;
@@ -74,6 +78,10 @@ public class ProfileFragment extends Fragment {
         mTextViewGroupExist = mView.findViewById(R.id.textViewGroupExist);
         mImageViewCover = mView.findViewById(R.id.imageViewCover);
         mCircleImageViewProfile = mView.findViewById(R.id.circleImageViewProfile);
+
+        mToolbar = mView.findViewById(R.id.toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("");
 
         mRecyclerView = mView.findViewById(R.id.recyclerViewMyGroup);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());

@@ -195,7 +195,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void saveImageFileAndProfile(File imageFile, final File imageFile2) {
         mDialog.show();
-        mImageProvider.save(EditProfileActivity.this, imageFile).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+        mImageProvider.save(EditProfileActivity.this, imageFile, "profile").addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> taskProfile) {
                 if (taskProfile.isSuccessful()) {
@@ -203,7 +203,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Uri uri) {
                             final String urlProfile = uri.toString();
-                            mImageProvider.save(EditProfileActivity.this, imageFile2).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            mImageProvider.save(EditProfileActivity.this, imageFile2, "cover").addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> taskCover) {
                                     if (taskCover.isSuccessful()) {
@@ -238,7 +238,14 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void saveImage(File image, final boolean isProfileImage) {
         mDialog.show();
-        mImageProvider.save(EditProfileActivity.this, image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+        String cosa;
+        if (isProfileImage) {
+            cosa = "profile";
+        }
+        else {
+            cosa = "cover";
+        }
+        mImageProvider.save(EditProfileActivity.this, image, cosa).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> taskProfile) {
                 if (taskProfile.isSuccessful()) {
