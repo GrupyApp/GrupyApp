@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,10 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.grupy.grupy.R;
 import com.grupy.grupy.adapters.SliderAdapter;
 import com.grupy.grupy.models.SliderItem;
+import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.PostProvider;
 import com.grupy.grupy.providers.UserProvider;
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
@@ -45,8 +48,12 @@ public class GroupDetailActivity extends AppCompatActivity {
     ImageView mImageViewCategory;
     CircleImageView mCircleImageViewProfile;
     Button mButtonShowProfile;
+    FloatingActionButton mFabChat;
+    AuthProvider mAuthProvider;
+
 
     String mIdUser = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +63,7 @@ public class GroupDetailActivity extends AppCompatActivity {
         mPostProvider = new PostProvider();
         mUserProvider = new UserProvider();
 
+
         mSliderView = findViewById(R.id.imageSlider);
         mTextViewName = findViewById(R.id.textViewName);
         mTextViewDescription = findViewById(R.id.textViewDescription);
@@ -64,8 +72,11 @@ public class GroupDetailActivity extends AppCompatActivity {
         mImageViewCategory = findViewById(R.id.imageViewCategory);
         mCircleImageViewProfile = findViewById(R.id.circleImageViewProfile);
         mButtonShowProfile = findViewById(R.id.btnShowProfile);
+        mFabChat = findViewById(R.id.fabChat);
+        mAuthProvider = new AuthProvider();
 
         mExtraPostId = getIntent().getStringExtra("id");
+
 
         getGroup();
 
@@ -75,6 +86,22 @@ public class GroupDetailActivity extends AppCompatActivity {
                 goToShowProfile();
             }
         });
+
+        mFabChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToChatActivity();
+            }
+        });
+    }
+
+    private void goToChatActivity() {
+        Intent intent = new Intent(GroupDetailActivity.this, ChatActivity.class);
+        //mAuthProvider.getUid() with authProvider we obtain users id
+        intent.putExtra("idUser1", mAuthProvider.getUid());
+        //mIdUser group owner's id
+        intent.putExtra("idUser2", mIdUser);
+        startActivity(intent);
     }
 
     private void goToShowProfile() {
@@ -101,6 +128,7 @@ public class GroupDetailActivity extends AppCompatActivity {
         mSliderView.startAutoCycle();
     }
 
+    //get the information of the one who created the group
     private void getGroup() {
         mPostProvider.getGroupById(mExtraPostId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override

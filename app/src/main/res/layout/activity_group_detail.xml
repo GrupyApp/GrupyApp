@@ -39,6 +39,7 @@
                     app:sliderStartAutoCycle="true"/>
                 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabChat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_chat_white"

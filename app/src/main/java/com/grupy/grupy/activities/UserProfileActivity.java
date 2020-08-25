@@ -6,14 +6,17 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -22,6 +25,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.grupy.grupy.R;
 import com.grupy.grupy.adapters.MyPostAdapter;
 import com.grupy.grupy.models.Post;
+import com.grupy.grupy.models.User;
 import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.PostProvider;
 import com.grupy.grupy.providers.UserProvider;
@@ -35,7 +39,6 @@ public class UserProfileActivity extends AppCompatActivity {
     TextView mTextViewGroupNumber;
     ImageView mImageViewCover;
     CircleImageView mCircleImageViewProfile;
-
     RecyclerView mRecyclerView;
     Toolbar mToolbar;
 
@@ -59,6 +62,7 @@ public class UserProfileActivity extends AppCompatActivity {
         mImageViewCover = findViewById(R.id.imageViewCover);
         mCircleImageViewProfile = findViewById(R.id.circleImageViewProfile);
 
+
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("");
@@ -75,10 +79,13 @@ public class UserProfileActivity extends AppCompatActivity {
         mPostProvider = new PostProvider();
 
 
+
         getUser();
         getGroupNumber();
         checkIfExistGroup();
     }
+
+
 
     @Override
     public void onStart() {
