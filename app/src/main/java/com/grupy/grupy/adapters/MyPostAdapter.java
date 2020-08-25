@@ -56,9 +56,9 @@ public class MyPostAdapter extends FirestoreRecyclerAdapter<Post, MyPostAdapter.
             holder.imageViewDelete.setVisibility(View.GONE);
         }
 
-        if (post.getImage() != null) {
-            if (!post.getImage().isEmpty()) {
-                Picasso.with(context).load(post.getImage()).into(holder.circleImageViewGroup);
+        if (post.getImage1() != null) {
+            if (!post.getImage1().isEmpty()) {
+                Picasso.with(context).load(post.getImage1()).into(holder.circleImageViewGroup);
             }
         }
         holder.viewHolder.setOnClickListener(new View.OnClickListener() {

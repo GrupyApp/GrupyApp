@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -106,11 +107,15 @@ public class GroupDetailActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
-                    if (documentSnapshot.contains("image")) {
-                        String image1 = documentSnapshot.getString("image");
-                        SliderItem item = new SliderItem();
-                        item.setImageUrl(image1);
-                        mSliderItems.add(item);
+                    for (int i = 1; i < 7; i++) {
+                        if (documentSnapshot.contains("image".concat(String.valueOf(i)))) {
+                            if (documentSnapshot.get("image".concat(String.valueOf(i))) != "") {
+                                String image = documentSnapshot.getString("image".concat(String.valueOf(i)));
+                                SliderItem item = new SliderItem();
+                                item.setImageUrl(image);
+                                mSliderItems.add(item);
+                            }
+                        }
                     }
                     if (documentSnapshot.contains("name")) {
                         String name = documentSnapshot.getString("name");

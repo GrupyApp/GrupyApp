@@ -19,17 +19,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.grupy.grupy.R;
-import com.grupy.grupy.fragments.HomeFragment;
 import com.grupy.grupy.models.Post;
 import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.ImageProvider;
 import com.grupy.grupy.providers.PostProvider;
+import com.grupy.grupy.utils.CompressorBitmapImage;
 import com.grupy.grupy.utils.FileUtil;
 import com.squareup.picasso.Picasso;
 
@@ -51,21 +54,6 @@ public class PostActivity extends AppCompatActivity {
     ImageView mImageViewPost5;
     ImageView mImageViewPost6;
 
-    /*
-    File mImageFile1;
-    File mImageFile2;
-    File mImageFile3;
-    File mImageFile4;
-    File mImageFile5;
-    File mImageFile6;
-
-    File mPhotoFile1;
-    File mPhotoFile2;
-    File mPhotoFile3;
-    File mPhotoFile4;
-    File mPhotoFile5;
-    File mPhotoFile6;
-    */
 
     List<File> mPhotoList;
     List<File> mImageList;
@@ -124,7 +112,7 @@ public class PostActivity extends AppCompatActivity {
         mImageViewPost5 = findViewById(R.id.imageViewPost5);
         mImageViewPost6 = findViewById(R.id.imageViewPost6);
 
-        mImageList = new ArrayList<File>();
+        mImageList = new ArrayList<>();
         mImageList.add(null);
         mImageList.add(null);
         mImageList.add(null);
@@ -132,7 +120,7 @@ public class PostActivity extends AppCompatActivity {
         mImageList.add(null);
         mImageList.add(null);
 
-        mPhotoList = new ArrayList<File>();
+        mPhotoList = new ArrayList<>();
         mPhotoList.add(null);
         mPhotoList.add(null);
         mPhotoList.add(null);
@@ -228,19 +216,15 @@ public class PostActivity extends AppCompatActivity {
                     }
                     else if (numberImage == 3) {
                         openGallery(GALLERY_REQUEST_CODE3);
-
                     }
                     else if (numberImage == 4) {
                         openGallery(GALLERY_REQUEST_CODE4);
-
                     }
                     else if (numberImage == 5) {
                         openGallery(GALLERY_REQUEST_CODE5);
-
                     }
                     else if (numberImage == 6) {
                         openGallery(GALLERY_REQUEST_CODE6);
-
                     }
 
                 }
@@ -349,22 +333,78 @@ public class PostActivity extends AppCompatActivity {
 
     }
 
-    //do
+    private void saveGroup() {
+        mDialog.show();
+        final Post post = new Post();
+        mImageList.removeAll(Collections.singleton(null));
+        List<Task<Uri>> uploadedImageUrlTasks = new ArrayList<>(mImageList.size());
+        for (int i = 0; i < mImageList.size(); i++) {
+            byte[] imageByte = CompressorBitmapImage.getImage(this, mImageList.get(i).getPath(), 500, 500);
+            final StorageReference storage = FirebaseStorage.getInstance().getReference().child(new Date() + "_" + i + ".jpg");  //possar raandom
+            UploadTask currentUploadTask = storage.putBytes(imageByte);
+            Task<Uri> currentUrlTask = currentUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    return storage.getDownloadUrl();
+                }
+            });
+            uploadedImageUrlTasks.add(currentUrlTask);
+        }
+
+        Tasks.whenAllComplete(uploadedImageUrlTasks).addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
+            @Override
+            public void onComplete(@NonNull Task<List<Task<?>>> task) {
+                List<Task<?>> tasks = task.getResult();
+                for (Task<?> taskItem : tasks) {
+                    if (taskItem.isSuccessful()) {
+                        Uri downloadUri = (Uri) taskItem.getResult();
+                        String url = downloadUri.toString();
+                        post.addPhoto(url);
+                    } else {
+                        Toast.makeText(PostActivity.this, "Error saving some images.", Toast.LENGTH_LONG).show();
+                    }
+                }
+                post.setName(mName);
+                post.setDescription(mDescription);
+                post.setIdUser(mAuthProvider.getUid());
+                mPostProvider.save(post).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> taskSave) {
+                        mDialog.dismiss();
+                        if (taskSave.isSuccessful()) {
+                            Toast.makeText(PostActivity.this, "Group saved", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(PostActivity.this, HomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                        else {
+                            Toast.makeText(PostActivity.this, "Unable to save the group", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    /*
     private void saveGroup() {
         mDialog.show();
         mImageList.removeAll(Collections.singleton(null));
         final Post post = new Post();
         for (int i = 0; i < mImageList.size(); i++) {
             final int j = i;
-            mImageProvider.save(PostActivity.this, mImageList.get(i)).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            mImageProvider.save(PostActivity.this, mImageList.get(i), String.valueOf(i)).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     if (task.isSuccessful()) {
                         mImageProvider.getmStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                post.addPhoto(uri.toString());
-                                Toast.makeText(PostActivity.this, String.valueOf(j), Toast.LENGTH_LONG).show();
+                                String url = uri.toString();
+                                post.addPhoto(url);
                                 if (j ==  mImageList.size()-1) {
                                     post.setName(mName);
                                     post.setDescription(mDescription);
@@ -373,10 +413,9 @@ public class PostActivity extends AppCompatActivity {
                                     mPostProvider.save(post).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> taskSave) {
-                                            Toast.makeText(PostActivity.this, "xdzfdxfdfxdfsfdsfdsf", Toast.LENGTH_LONG).show();
                                             mDialog.dismiss();
                                             if (taskSave.isSuccessful()) {
-                                                //Toast.makeText(PostActivity.this, "Group saved", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(PostActivity.this, "Group saved", Toast.LENGTH_LONG).show();
                                                 Intent intent = new Intent(PostActivity.this, HomeActivity.class);
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                                 startActivity(intent);
@@ -396,31 +435,7 @@ public class PostActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    private void saveImage(final File image) {
-        final Post post = new Post();
-        mImageProvider.save(PostActivity.this, image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                if (task.isSuccessful()) {
-                    mImageProvider.getmStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            post.addPhoto(uri.toString());
-                        }
-                    });
-                } else {
-                    mDialog.dismiss();
-                    Toast.makeText(PostActivity.this, "Image could not be saved.", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
-
-    private void Url(String url) {
-        mUrl = url;
-    }
+    }*/
 
 /*
     private void saveImage2(final File mImageFile1, final File mImageFile2) {
