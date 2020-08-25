@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "510860078031-cqsr3o1mebi6f0kh7jgcd709e1tgrelo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.grupy.grupy",
+            "certificate_hash": "c8d03f6782a5e582af48a1af03ee112a68d07469"
+          }
+        },
+        {
           "client_id": "510860078031-6uuha54dodj50selmn288lgeob3dki9e.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

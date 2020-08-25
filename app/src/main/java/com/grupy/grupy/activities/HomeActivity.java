@@ -7,15 +7,22 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.grupy.grupy.R;
 import com.grupy.grupy.fragments.HomeFragment;
 import com.grupy.grupy.fragments.ProfileFragment;
+import com.grupy.grupy.providers.AuthProvider;
+import com.grupy.grupy.providers.TokenProvider;
 
 public class HomeActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigation;
+
+    TokenProvider mTokenProvider;
+    AuthProvider mAuthProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +31,12 @@ public class HomeActivity extends AppCompatActivity {
 
         bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
+
+        mTokenProvider = new TokenProvider();
+        mAuthProvider = new AuthProvider();
         openFragment(new HomeFragment());
+        createToken();
+        Toast.makeText(HomeActivity.this, "Token", Toast.LENGTH_LONG);
     }
 
     public void openFragment(Fragment fragment) {
@@ -48,4 +60,9 @@ public class HomeActivity extends AppCompatActivity {
                     return true;
                 }
             };
+
+    private void createToken() {
+        mTokenProvider.create(mAuthProvider.getUid());
+        Toast.makeText(HomeActivity.this, "Token", Toast.LENGTH_LONG);
+    }
 }
