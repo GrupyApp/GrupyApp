@@ -17,9 +17,30 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.UserProfileActivity"
-            android:parentActivityName=".activities.GroupDetailActivity"/>
-        <activity android:name=".activities.GroupDetailActivity" />
-        <activity android:name=".activities.EditProfileActivity" />
+            android:parentActivityName=".activities.GroupDetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.GroupDetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.EditProfileActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.PostActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.CompleteProfileActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.HomeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.RegisterActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.LogInActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.MainActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -30,19 +51,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
-        <activity android:name=".activities.PostActivity" />
-        <activity android:name=".activities.CompleteProfileActivity" />
-        <activity android:name=".activities.HomeActivity" />
-        <activity android:name=".activities.RegisterActivity" />
-        <activity android:name=".activities.LogInActivity" />
-        <activity android:name=".activities.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>
