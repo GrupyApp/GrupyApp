@@ -8,4 +8,8 @@
         android:id="@+id/itemProfile"
         android:icon="@drawable/ic_profile_menu"
         android:title="Profile" />
+    <item
+        android:id="@+id/itemChat"
+        android:icon="@drawable/ic_baseline_chat_bubble_outline_24"
+        android:title="Chat" />
 </menu>

@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.grupy.grupy.R;
+import com.grupy.grupy.fragments.ChatFragment;
 import com.grupy.grupy.fragments.HomeFragment;
 import com.grupy.grupy.fragments.ProfileFragment;
 import com.grupy.grupy.providers.AuthProvider;
@@ -56,6 +57,10 @@ public class HomeActivity extends AppCompatActivity {
                     else if (item.getItemId() == R.id.itemProfile) {
                         //FRAGMENT PROFILE
                         openFragment(new ProfileFragment());
+                    }
+                    else if (item.getItemId() == R.id.itemChat) {
+                        //FRAGMENT PROFILE
+                        openFragment(new ChatFragment());
                     }
                     return true;
                 }

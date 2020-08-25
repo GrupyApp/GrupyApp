@@ -8,4 +8,5 @@
     <color name="colorTransparent">#00000000</color>
     <color name="colorRed">#CF1B1B</color>
     <color name="colorGrayLight">#DFDFDF</color>
+    <color name="colorGray">#8A8A8A</color>
 </resources>
