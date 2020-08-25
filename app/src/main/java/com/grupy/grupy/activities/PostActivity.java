@@ -285,7 +285,7 @@ public class PostActivity extends AppCompatActivity {
                 new Date() + "_photo",
                 ".jpg",
                 storageDir
-        );  //Aqui sota aniria if per cada request code
+        );
 
         if (requestCode == PHOTO_REQUEST_CODE1) {
             mPhotoPath1 = "file:" + photoFile.getAbsolutePath();
@@ -295,19 +295,19 @@ public class PostActivity extends AppCompatActivity {
             mPhotoPath2 = "file:" + photoFile.getAbsolutePath();
             mAbsolutePhotoPath2 = photoFile.getAbsolutePath();
         }
-        else if (requestCode == PHOTO_REQUEST_CODE2) {
+        else if (requestCode == PHOTO_REQUEST_CODE3) {
             mPhotoPath3 = "file:" + photoFile.getAbsolutePath();
             mAbsolutePhotoPath3 = photoFile.getAbsolutePath();
         }
-        else if (requestCode == PHOTO_REQUEST_CODE2) {
+        else if (requestCode == PHOTO_REQUEST_CODE4) {
             mPhotoPath4 = "file:" + photoFile.getAbsolutePath();
             mAbsolutePhotoPath4 = photoFile.getAbsolutePath();
         }
-        else if (requestCode == PHOTO_REQUEST_CODE2) {
+        else if (requestCode == PHOTO_REQUEST_CODE5) {
             mPhotoPath5 = "file:" + photoFile.getAbsolutePath();
             mAbsolutePhotoPath5 = photoFile.getAbsolutePath();
         }
-        else if (requestCode == PHOTO_REQUEST_CODE2) {
+        else if (requestCode == PHOTO_REQUEST_CODE6) {
             mPhotoPath6 = "file:" + photoFile.getAbsolutePath();
             mAbsolutePhotoPath6 = photoFile.getAbsolutePath();
         }
@@ -335,11 +335,19 @@ public class PostActivity extends AppCompatActivity {
 
     private void saveGroup() {
         mDialog.show();
+        List<File> images = new ArrayList<>();
         final Post post = new Post();
-        mImageList.removeAll(Collections.singleton(null));
-        List<Task<Uri>> uploadedImageUrlTasks = new ArrayList<>(mImageList.size());
         for (int i = 0; i < mImageList.size(); i++) {
-            byte[] imageByte = CompressorBitmapImage.getImage(this, mImageList.get(i).getPath(), 500, 500);
+            if (mImageList.get(i) != null) {
+                images.add(mImageList.get(i));
+            }
+            else if (mPhotoList.get(i) != null) {
+                images.add(mPhotoList.get(i));
+            }
+        }
+        List<Task<Uri>> uploadedImageUrlTasks = new ArrayList<>(images.size());
+        for (int i = 0; i < images.size(); i++) {
+            byte[] imageByte = CompressorBitmapImage.getImage(this, images.get(i).getPath(), 500, 500);
             final StorageReference storage = FirebaseStorage.getInstance().getReference().child(new Date() + "_" + i + ".jpg");  //possar raandom
             UploadTask currentUploadTask = storage.putBytes(imageByte);
             Task<Uri> currentUrlTask = currentUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {

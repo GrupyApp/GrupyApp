@@ -146,7 +146,9 @@ public class GroupDetailActivity extends AppCompatActivity {
                     }
                     if (documentSnapshot.contains("image_profile")) {
                         String imageProfile = documentSnapshot.getString("image_profile");
-                        Picasso.with(GroupDetailActivity.this).load(imageProfile).into(mCircleImageViewProfile);
+                        if (imageProfile != null && imageProfile != "") {
+                            Picasso.with(GroupDetailActivity.this).load(imageProfile).into(mCircleImageViewProfile);
+                        }
                     }
                 }
             }
