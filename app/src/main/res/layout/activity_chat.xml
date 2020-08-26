@@ -44,7 +44,6 @@
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:src="@mipmap/ic_send"
-            android:civ_circle_background_color="@color/colorAccent"
             android:layout_marginLeft="10dp"
             />
 

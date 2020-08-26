@@ -10,10 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.grupy.grupy.R;
 import com.grupy.grupy.models.Chat;
 import com.grupy.grupy.providers.ChatsProvider;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ChatActivity extends AppCompatActivity {
@@ -53,6 +56,17 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+    private void checkIfChatExist() {
+        mChatsProvider.getChatByUser1AndUser2(mExtraIdUser1, mExtraIdUser2).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                int size = queryDocumentSnapshots.size();
+                if (size == 0) {
+                    createChat();
+                }
+            }
+        });
+    }
 
 
     private void createChat() {
@@ -61,6 +75,12 @@ public class ChatActivity extends AppCompatActivity {
         chat.setIdUser2(mExtraIdUser2);
         chat.setWriting(false);
         chat.setTimestamp(new Date().getTime());
+        chat.setId(mExtraIdUser1 + mExtraIdUser2);
+
+        ArrayList<String> ids = new ArrayList<>();
+        ids.add(mExtraIdUser1);
+        ids.add(mExtraIdUser2);
+        chat.setIds(ids);
         mChatsProvider.create(chat);
     }
 }
