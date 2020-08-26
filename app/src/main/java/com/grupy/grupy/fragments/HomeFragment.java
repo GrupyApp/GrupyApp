@@ -25,14 +25,17 @@ import com.grupy.grupy.adapters.PostAdapter;
 import com.grupy.grupy.models.Post;
 import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.PostProvider;
+import com.mancj.materialsearchbar.MaterialSearchBar;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements MaterialSearchBar.OnSearchActionListener {
 
     View mView;
     FloatingActionButton mPost;
+    MaterialSearchBar mSearchBar;
+
     AuthProvider mAuthProvider;
     RecyclerView mRecyclerView;
     PostProvider mPostProvider;
@@ -46,19 +49,22 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        setHasOptionsMenu(true);
         mView = inflater.inflate(R.layout.fragment_home, container, false);
 
         mPost = mView.findViewById(R.id.btnPost);
-        setHasOptionsMenu(true);
-        mAuthProvider = new AuthProvider();
+        mSearchBar = mView.findViewById(R.id.searchBar);
         mRecyclerView = mView.findViewById(R.id.recyclerViewHome);
+
+        mAuthProvider = new AuthProvider();
         mPostProvider = new PostProvider();
 
+        mSearchBar.setOnSearchActionListener(this);
+        //mSearchBar.inflateMenu(R.menu.main_menu);  If we had a menu
+        //mSearchBar.getMenu().setOnMenuItemClickListener(...);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(linearLayoutManager);
-
-
 
         mPost.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,4 +99,18 @@ public class HomeFragment extends Fragment {
         startActivity(intent);
     }
 
+    @Override
+    public void onSearchStateChanged(boolean enabled) {
+
+    }
+
+    @Override
+    public void onSearchConfirmed(CharSequence text) {
+
+    }
+
+    @Override
+    public void onButtonClicked(int buttonCode) {
+
+    }
 }
