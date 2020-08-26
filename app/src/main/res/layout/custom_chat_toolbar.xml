@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorAccent">
+
+    <ImageView
+        android:id="@+id/imageViewBack"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_baseline_arrow_back_50"
+        android:layout_marginTop="7dp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/circleImageProfile"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:civ_circle_background_color="@color/colorBlack"
+        android:src="@drawable/ic_profile_menu"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toRightOf="@id/imageViewBack"/>
+    <TextView
+        android:id="@+id/textViewUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User name"
+        android:textColor="@color/colorWhite"
+        android:textSize="18dp"
+        android:maxLines="1"
+        android:layout_toRightOf="@+id/circleImageProfile"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorWhite"
+        android:text="Recently"
+        android:maxLines="1"
+        android:textSize="12dp"
+        android:layout_toRightOf="@id/circleImageProfile"
+        android:layout_below="@id/textViewUsername" />
+
+
+
+
+</RelativeLayout>

@@ -375,7 +375,7 @@ public class PostActivity extends AppCompatActivity {
                         Toast.makeText(PostActivity.this, "Error saving some images.", Toast.LENGTH_LONG).show();
                     }
                 }
-                post.setName(mName);
+                post.setName(mName.toLowerCase());  //TEMP fer-ho minuscules
                 post.setDescription(mDescription);
                 post.setIdUser(mAuthProvider.getUid());
                 mPostProvider.save(post).addOnCompleteListener(new OnCompleteListener<Void>() {

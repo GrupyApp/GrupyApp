@@ -6,10 +6,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.Query;
 import com.grupy.grupy.R;
 import com.grupy.grupy.adapters.ChatsAdapter;
+import com.grupy.grupy.adapters.PostAdapter;
+import com.grupy.grupy.models.Chat;
+import com.grupy.grupy.models.Post;
+import com.grupy.grupy.providers.AuthProvider;
+import com.grupy.grupy.providers.ChatsProvider;
 
 /**
  * A simple {@Link Fragment} subclass.
@@ -17,8 +25,10 @@ import com.grupy.grupy.adapters.ChatsAdapter;
 public class ChatFragment extends Fragment {
 
     ChatsAdapter mAdapter;
-    RecyclerView mRecycleView;
+    RecyclerView mRecyclerView;
     View mView;
+    ChatsProvider mChatsProvider;
+    AuthProvider mAuthProvider;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -29,6 +39,30 @@ public class ChatFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_chat, container, false);
+        mRecyclerView = mView.findViewById(R.id.recyclerViewChats);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mChatsProvider = new ChatsProvider();
+        mAuthProvider = new AuthProvider();
         return  mView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Query query = mChatsProvider.getAll(mAuthProvider.getUid());
+        FirestoreRecyclerOptions<Chat> options = new FirestoreRecyclerOptions.Builder<Chat>()
+                .setQuery(query, Chat.class)
+                .build();
+        mAdapter = new ChatsAdapter(options, getContext());
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mAdapter.stopListening();
     }
 }

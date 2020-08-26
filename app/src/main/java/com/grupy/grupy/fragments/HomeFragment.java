@@ -70,9 +70,7 @@ public class HomeFragment extends Fragment {
         return mView;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    private void getAllPost() {
         Query query = mPostProvider.getAll();
         FirestoreRecyclerOptions<Post> options = new FirestoreRecyclerOptions.Builder<Post>()
                 .setQuery(query, Post.class)
@@ -80,6 +78,12 @@ public class HomeFragment extends Fragment {
         mPostAdapter = new PostAdapter(options, getContext());
         mRecyclerView.setAdapter(mPostAdapter);
         mPostAdapter.startListening();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getAllPost();
     }
 
     @Override
