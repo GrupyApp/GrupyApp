@@ -39,7 +39,6 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -54,13 +53,15 @@ public class PostActivity extends AppCompatActivity {
     ImageView mImageViewPost5;
     ImageView mImageViewPost6;
 
-
     List<File> mPhotoList;
     List<File> mImageList;
     Button mButtonCreate;
+    ImageView arrowBack;
+
     ImageProvider mImageProvider;
     PostProvider mPostProvider;
     AuthProvider mAuthProvider;
+
     TextInputEditText mTextInputName;
     TextInputEditText mTextInputDescription;
     String mName = "";
@@ -130,9 +131,9 @@ public class PostActivity extends AppCompatActivity {
 
 
         mButtonCreate = findViewById(R.id.btnCreate);
-
         mTextInputName = findViewById(R.id.textInputName);
         mTextInputDescription = findViewById(R.id.textInputDescription);
+        arrowBack = findViewById(R.id.arrowBack);
 
         mImageProvider = new ImageProvider();
         mPostProvider = new PostProvider();
@@ -196,6 +197,13 @@ public class PostActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 selectOptionImage(6);
+            }
+        });
+
+        arrowBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }
@@ -276,7 +284,6 @@ public class PostActivity extends AppCompatActivity {
                 startActivityForResult(takePictureIntent, requestCode);
             }
         }
-
     }
 
     private File createPhotoFile(int requestCode) throws IOException {
@@ -311,7 +318,6 @@ public class PostActivity extends AppCompatActivity {
             mPhotoPath6 = "file:" + photoFile.getAbsolutePath();
             mAbsolutePhotoPath6 = photoFile.getAbsolutePath();
         }
-
 
         return photoFile;
     }

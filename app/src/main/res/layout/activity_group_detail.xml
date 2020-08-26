@@ -173,4 +173,13 @@
 
     </ScrollView>
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/arrowBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_arrow_back_white"
+        app:civ_circle_background_color="@color/colorAccent"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

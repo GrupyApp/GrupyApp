@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,8 +36,11 @@ public class RegisterActivity extends AppCompatActivity {
     TextInputEditText mTextInputPassword;
     TextInputEditText mTextInputConfirmPassword;
     Button mButtonFinish;
+    ImageView arrowBack;
+
     AuthProvider mAuthProvider;
     UserProvider mUserProvider;
+
     AlertDialog mDialog;
 
     @Override
@@ -49,15 +53,24 @@ public class RegisterActivity extends AppCompatActivity {
         mTextInputPassword = findViewById(R.id.textInputPassoword);
         mTextInputConfirmPassword = findViewById(R.id.textInputConfirmPassoword);
         mButtonFinish = findViewById(R.id.btnFinish);
+        arrowBack = findViewById(R.id.arrowBack);
 
+        mUserProvider = new UserProvider();
         mAuthProvider = new AuthProvider();
+
         mButtonFinish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 register();
             }
         });
-        mUserProvider = new UserProvider();
+
+        arrowBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         mDialog = new SpotsDialog.Builder()
                 .setContext(this)
