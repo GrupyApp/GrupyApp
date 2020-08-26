@@ -1,5 +1,6 @@
 package com.grupy.grupy.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,23 +9,50 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.grupy.grupy.R;
 import com.grupy.grupy.models.Chat;
+import com.grupy.grupy.models.Message;
+import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.ChatsProvider;
+import com.grupy.grupy.providers.MessageProvider;
+import com.grupy.grupy.providers.UserProvider;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Date;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
 
     String mExtraIdUser1;
     String mExtraIdUser2;
+    String mExtraIdChat;
 
     ChatsProvider mChatsProvider;
+    MessageProvider mMessageProvider;
+    AuthProvider mAuthProvider;
+    UserProvider mUsersProvider;
+
+    EditText mEditTextMessage;
+    ImageView mImageViewMessage;
+
+    CircleImageView mCircleImageProfile;
+    TextView mTextViewUsername;
+    TextView mTextViewRelativeTime;
+    ImageView mImageViewBack;
 
     View mActionBarView;
 
@@ -32,13 +60,64 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        showCustomToolbar(R.layout.custom_chat_toolbar);
+
+        mChatsProvider = new ChatsProvider();
+        mMessageProvider = new MessageProvider();
+        mAuthProvider = new AuthProvider();
+        mUsersProvider = new UserProvider();
+
+
+
+        mEditTextMessage = findViewById(R.id.editTextMessage);
+        mImageViewMessage = findViewById(R.id.imageViewSendMessage);
 
         mExtraIdUser1 = getIntent().getStringExtra("idUser1");
         mExtraIdUser2 = getIntent().getStringExtra("idUser2");
-        mChatsProvider = new ChatsProvider();
+        mExtraIdChat = getIntent().getStringExtra("idChat");
 
-        createChat();
+        showCustomToolbar(R.layout.custom_chat_toolbar);
+
+        mImageViewMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage();
+            }
+        });
+
+        checkIfChatExist();
+    }
+
+    private void sendMessage() {
+        String textMessage = mEditTextMessage.getText().toString();
+        if (!textMessage.isEmpty()) {
+            Message message = new Message();
+            message.setIdChat(mExtraIdChat);
+            if (mAuthProvider.getUid().equals(mExtraIdUser1)) {
+                message.setIdSender(mExtraIdUser1);
+                message.setIdReceiver(mExtraIdUser2);
+            }
+            else {
+                message.setIdSender(mExtraIdUser2);
+                message.setIdReceiver(mExtraIdUser1);
+            }
+            message.setTimestamp(new Date().getTime());
+            message.setViewed(false);
+            message.setIdChat(mExtraIdChat);
+            message.setMessage(textMessage);
+
+            mMessageProvider.create(message).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        mEditTextMessage.setText("");
+                        Toast.makeText(ChatActivity.this, "correct", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(ChatActivity.this, "correct", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
     }
 
     private void showCustomToolbar(int resource) {
@@ -52,8 +131,49 @@ public class ChatActivity extends AppCompatActivity {
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mActionBarView = inflater.inflate(resource,null);
         actionBar.setCustomView(mActionBarView);
+        mCircleImageProfile = mActionBarView.findViewById(R.id.circleImageProfile);
+        mTextViewUsername = mActionBarView.findViewById(R.id.textViewUsername);
+        mTextViewRelativeTime = mActionBarView.findViewById(R.id.textViewRelativeTime);
+        mImageViewBack = mActionBarView.findViewById(R.id.imageViewBack);
+
+        mImageViewBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        getUserInfo();
 
 
+    }
+
+    private void getUserInfo() {
+        String idUserInfo = "";
+        if (mAuthProvider.getUid().equals(mExtraIdUser1)) {
+            idUserInfo = mExtraIdUser2;
+        }
+        else {
+            idUserInfo = mExtraIdUser1;
+        }
+        mUsersProvider.getUser(idUserInfo).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    if (documentSnapshot.contains("username")) {
+                        String username = documentSnapshot.getString("username");
+                        mTextViewUsername.setText(username);
+                    }
+                    if (documentSnapshot.contains("image_profile")) {
+                        String imageProfile = documentSnapshot.getString("image_profile");
+                        if (imageProfile != null) {
+                            if (!imageProfile.equals("")) {
+                                Picasso.with(ChatActivity.this).load(imageProfile).into(mCircleImageProfile);
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private void checkIfChatExist() {
@@ -63,6 +183,9 @@ public class ChatActivity extends AppCompatActivity {
                 int size = queryDocumentSnapshots.size();
                 if (size == 0) {
                     createChat();
+                }
+                else {
+                    mExtraIdChat = queryDocumentSnapshots.getDocuments().get(0).getId();
                 }
             }
         });

@@ -1,6 +1,7 @@
 package com.grupy.grupy.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.grupy.grupy.R;
+import com.grupy.grupy.activities.ChatActivity;
 import com.grupy.grupy.models.Chat;
 import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.UserProvider;
@@ -36,7 +38,7 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull Chat chat) {
+    protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull final Chat chat) {
 
         DocumentSnapshot document = getSnapshots().getSnapshot(position);
         //chatId is the Id of the person that we are chatting with
@@ -48,6 +50,21 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
             getUserInfo(chat.getIdUser1(), holder);
         }
 
+        holder.viewHolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gotoChatActivity(chatId, chat.getIdUser1(), chat.getIdUser2());
+            }
+        });
+
+    }
+
+    private void gotoChatActivity(String chatId, String idUser1, String idUser2) {
+        Intent intent = new Intent(context, ChatActivity.class);
+        intent.putExtra("idChat", chatId);
+        intent.putExtra("idUser1", idUser1);
+        intent.putExtra("idUser2", idUser2);
+        context.startActivity(intent);
     }
 
     private void getUserInfo(String idUser, final ViewHolder holder) {
