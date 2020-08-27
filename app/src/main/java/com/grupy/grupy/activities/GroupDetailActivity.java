@@ -51,9 +51,9 @@ public class GroupDetailActivity extends AppCompatActivity {
     FloatingActionButton mFabChat;
     AuthProvider mAuthProvider;
 
+    CircleImageView arrowBack;
 
     String mIdUser = "";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,6 @@ public class GroupDetailActivity extends AppCompatActivity {
 
         mPostProvider = new PostProvider();
         mUserProvider = new UserProvider();
-
 
         mSliderView = findViewById(R.id.imageSlider);
         mTextViewName = findViewById(R.id.textViewName);
@@ -74,9 +73,9 @@ public class GroupDetailActivity extends AppCompatActivity {
         mButtonShowProfile = findViewById(R.id.btnShowProfile);
         mFabChat = findViewById(R.id.fabChat);
         mAuthProvider = new AuthProvider();
+        arrowBack = findViewById(R.id.arrowBack);
 
         mExtraPostId = getIntent().getStringExtra("id");
-
 
         getGroup();
 
@@ -93,6 +92,13 @@ public class GroupDetailActivity extends AppCompatActivity {
                 goToChatActivity();
             }
         });
+
+        arrowBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void goToChatActivity() {
@@ -102,6 +108,7 @@ public class GroupDetailActivity extends AppCompatActivity {
         //mIdUser group owner's id
         intent.putExtra("idUser2", mIdUser);
         startActivity(intent);
+
     }
 
     private void goToShowProfile() {

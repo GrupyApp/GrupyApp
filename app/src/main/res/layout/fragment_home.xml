@@ -7,10 +7,29 @@
     tools:context=".fragments.HomeFragment"
     android:layout_marginBottom="50dp">
 
+    <com.mancj.materialsearchbar.MaterialSearchBar
+        android:id="@+id/searchBar"
+        style="@style/MaterialSearchBarLight"
+        app:mt_searchBarColor="@color/colorAccent"
+        app:mt_placeholderColor="@color/colorWhite"
+        app:mt_hint="Search text"
+        app:mt_placeholder="Search"
+        app:mt_maxSuggestionsCount="10"
+        android:layout_width="match_parent"
+        app:mt_searchIconTint="@color/colorWhite"
+        app:mt_menuIconTint="@color/colorWhite"
+        app:mt_clearIconTint="@color/colorWhite"
+        app:mt_textColor="@color/colorWhite"
+        app:mt_hintColor="@color/colorWhite"
+        app:mt_backIconTint="@color/colorWhite"
+        app:mt_leftTextSelectorTint="@color/colorWhite"
+        android:layout_height="wrap_content"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginTop="55dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewHome"
@@ -19,8 +38,6 @@
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
     </LinearLayout>
-    
-    
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnPost"

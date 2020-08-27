@@ -28,6 +28,10 @@ public class PostProvider {
         return mCollection.whereEqualTo("idUser", id);
     }
 
+    public Query getGroupByName(String name) {
+        return mCollection.orderBy("name").startAt(name).endAt(name+'\uf8ff');
+    }
+
     public Task<DocumentSnapshot> getGroupById (String id) {
         return mCollection.document(id).get();
     }

@@ -48,6 +48,8 @@ public class EditProfileActivity extends AppCompatActivity {
     ImageView mImageViewCover;
     TextInputEditText mTextInputUsername;
     Button mButtonEditProfile;
+    ImageView arrowBack;
+
     ImageProvider mImageProvider;
     UserProvider mUserProvider;
     AuthProvider mAuthProvider;
@@ -86,6 +88,7 @@ public class EditProfileActivity extends AppCompatActivity {
         mImageViewCover = findViewById(R.id.imageViewCover);
         mTextInputUsername = findViewById(R.id.textInputUsername);
         mButtonEditProfile = findViewById(R.id.btnEditProfile);
+        arrowBack = findViewById(R.id.arrowBack);
 
         mImageProvider = new ImageProvider();
         mUserProvider = new UserProvider();
@@ -104,6 +107,13 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 selectOptionImage(1);
+            }
+        });
+
+        arrowBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 
