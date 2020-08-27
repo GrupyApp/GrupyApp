@@ -34,6 +34,7 @@ import com.grupy.grupy.providers.ImageProvider;
 import com.grupy.grupy.providers.PostProvider;
 import com.grupy.grupy.utils.CompressorBitmapImage;
 import com.grupy.grupy.utils.FileUtil;
+import com.grupy.grupy.utils.ViewedMessageHelper;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -506,5 +507,17 @@ public class PostActivity extends AppCompatActivity {
             mPhotoList.set(5,new File(mAbsolutePhotoPath6));
             Picasso.with(PostActivity.this).load(mPhotoPath6).into(mImageViewPost6);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ViewedMessageHelper.updateOnline(true, PostActivity.this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ViewedMessageHelper.updateOnline(false, PostActivity.this);
     }
 }

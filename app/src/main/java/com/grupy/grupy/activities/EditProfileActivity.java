@@ -33,6 +33,7 @@ import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.ImageProvider;
 import com.grupy.grupy.providers.UserProvider;
 import com.grupy.grupy.utils.FileUtil;
+import com.grupy.grupy.utils.ViewedMessageHelper;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -432,5 +433,17 @@ public class EditProfileActivity extends AppCompatActivity {
             mPhotoFile2 = new File(mAbsolutePhotoPath);
             Picasso.with(EditProfileActivity.this).load(mPhotoPath).into(mImageViewCover);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ViewedMessageHelper.updateOnline(true, EditProfileActivity.this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ViewedMessageHelper.updateOnline(false, EditProfileActivity.this);
     }
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="10dp"
+    android:paddingHorizontal="30dp">
+
+    <LinearLayout
+        android:id="@+id/linearLayoutMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/rounded_linear_layout"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="10dp"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:id="@+id/textViewMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="New message"
+            android:textSize="15dp"
+            android:textColor="@color/colorWhite"/>
+
+        <TextView
+            android:id="@+id/textViewDateMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:textSize="12dp"
+            android:textColor="@color/colorGray"
+            android:layout_marginLeft="5dp"
+            android:layout_gravity="bottom"/>
+
+        <ImageView
+            android:id="@+id/imageViewViewedMessage"
+            android:layout_width="45dp"
+            android:layout_height="20dp"
+            android:src="@drawable/icon_check_white"
+            android:layout_gravity="bottom"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

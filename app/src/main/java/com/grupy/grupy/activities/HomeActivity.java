@@ -17,6 +17,8 @@ import com.grupy.grupy.fragments.HomeFragment;
 import com.grupy.grupy.fragments.ProfileFragment;
 import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.TokenProvider;
+import com.grupy.grupy.providers.UserProvider;
+import com.grupy.grupy.utils.ViewedMessageHelper;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -24,6 +26,7 @@ public class HomeActivity extends AppCompatActivity {
 
     TokenProvider mTokenProvider;
     AuthProvider mAuthProvider;
+    UserProvider mUserProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +38,23 @@ public class HomeActivity extends AppCompatActivity {
 
         mTokenProvider = new TokenProvider();
         mAuthProvider = new AuthProvider();
+        mUserProvider = new UserProvider();
+
         openFragment(new HomeFragment());
         createToken();
         Toast.makeText(HomeActivity.this, "Token", Toast.LENGTH_LONG);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ViewedMessageHelper.updateOnline(true, HomeActivity.this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ViewedMessageHelper.updateOnline(false, HomeActivity.this);
     }
 
     public void openFragment(Fragment fragment) {

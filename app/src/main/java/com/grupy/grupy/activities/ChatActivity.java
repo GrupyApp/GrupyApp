@@ -1,12 +1,12 @@
 package com.grupy.grupy.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -15,19 +15,29 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.grupy.grupy.R;
+import com.grupy.grupy.adapters.MessageAdapter;
 import com.grupy.grupy.models.Chat;
 import com.grupy.grupy.models.Message;
 import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.ChatsProvider;
 import com.grupy.grupy.providers.MessageProvider;
 import com.grupy.grupy.providers.UserProvider;
+import com.grupy.grupy.utils.RelativeTime;
+import com.grupy.grupy.utils.ViewedMessageHelper;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -46,6 +56,8 @@ public class ChatActivity extends AppCompatActivity {
     AuthProvider mAuthProvider;
     UserProvider mUsersProvider;
 
+    MessageAdapter mMessageAdapter;
+
     EditText mEditTextMessage;
     ImageView mImageViewMessage;
 
@@ -53,6 +65,11 @@ public class ChatActivity extends AppCompatActivity {
     TextView mTextViewUsername;
     TextView mTextViewRelativeTime;
     ImageView mImageViewBack;
+    RecyclerView mRecyclerViewMessage;
+
+    LinearLayoutManager mLinearLayoutManager;
+
+    ListenerRegistration mListener;
 
     View mActionBarView;
 
@@ -66,7 +83,11 @@ public class ChatActivity extends AppCompatActivity {
         mAuthProvider = new AuthProvider();
         mUsersProvider = new UserProvider();
 
+        mRecyclerViewMessage = findViewById(R.id.recyclerViewMessage);
 
+        mLinearLayoutManager = new LinearLayoutManager(ChatActivity.this);
+        mLinearLayoutManager.setStackFromEnd(true);
+        mRecyclerViewMessage.setLayoutManager(mLinearLayoutManager);
 
         mEditTextMessage = findViewById(R.id.editTextMessage);
         mImageViewMessage = findViewById(R.id.imageViewSendMessage);
@@ -85,6 +106,58 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         checkIfChatExist();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mMessageAdapter != null) {
+            mMessageAdapter.startListening();
+        }
+        ViewedMessageHelper.updateOnline(true, ChatActivity.this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mMessageAdapter.stopListening();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ViewedMessageHelper.updateOnline(false, ChatActivity.this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mListener != null) {
+            mListener.remove();
+        }
+    }
+
+    private void getMessageChat() {
+        Query query = mMessageProvider.getMessageByChat(mExtraIdChat);
+        FirestoreRecyclerOptions<Message> options = new FirestoreRecyclerOptions.Builder<Message>()
+                .setQuery(query, Message.class)
+                .build();
+        mMessageAdapter = new MessageAdapter(options, ChatActivity.this);
+        mRecyclerViewMessage.setAdapter(mMessageAdapter);
+        mMessageAdapter.startListening();
+        mMessageAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                updateViewed();
+                int numberMessage = mMessageAdapter.getItemCount();
+                int lastMessagePosition = mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+
+                if (lastMessagePosition == -1 || (positionStart >= (numberMessage - 1) && lastMessagePosition == (positionStart - 1))) {
+                    mRecyclerViewMessage.scrollToPosition(positionStart);
+                }
+            }
+        });
     }
 
     private void sendMessage() {
@@ -110,10 +183,10 @@ public class ChatActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         mEditTextMessage.setText("");
-                        Toast.makeText(ChatActivity.this, "correct", Toast.LENGTH_LONG).show();
+                        mMessageAdapter.notifyDataSetChanged();
                     }
                     else {
-                        Toast.makeText(ChatActivity.this, "correct", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ChatActivity.this, "Bad", Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -155,13 +228,24 @@ public class ChatActivity extends AppCompatActivity {
         else {
             idUserInfo = mExtraIdUser1;
         }
-        mUsersProvider.getUser(idUserInfo).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        mListener = mUsersProvider.getUserRealTime(idUserInfo).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
                 if (documentSnapshot.exists()) {
                     if (documentSnapshot.contains("username")) {
                         String username = documentSnapshot.getString("username");
                         mTextViewUsername.setText(username);
+                    }
+                    if (documentSnapshot.contains("online")) {
+                        boolean online = documentSnapshot.getBoolean("online");
+                        if (online) {
+                            mTextViewRelativeTime.setText("Online");
+                        }
+                        else if (documentSnapshot.contains("lastConnect")) {
+                            long lastConnect = documentSnapshot.getLong("lastConnect");
+                            String relativeTime = RelativeTime.getTimeAgo(lastConnect, ChatActivity.this);
+                            mTextViewRelativeTime.setText(relativeTime);
+                        }
                     }
                     if (documentSnapshot.contains("image_profile")) {
                         String imageProfile = documentSnapshot.getString("image_profile");
@@ -186,6 +270,28 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 else {
                     mExtraIdChat = queryDocumentSnapshots.getDocuments().get(0).getId();
+                    getMessageChat();
+                    updateViewed();
+                }
+            }
+        });
+    }
+
+    private void updateViewed() {
+        String idSender = "";
+
+        if (mAuthProvider.getUid().equals(mExtraIdUser1)) {
+            idSender = mExtraIdUser2;
+        }
+        else {
+            idSender = mExtraIdUser1;
+        }
+
+        mMessageProvider.getMessageByChatandSender(mExtraIdChat, idSender).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                    mMessageProvider.updateViewed(document.getId(), true);
                 }
             }
         });
@@ -205,5 +311,7 @@ public class ChatActivity extends AppCompatActivity {
         ids.add(mExtraIdUser2);
         chat.setIds(ids);
         mChatsProvider.create(chat);
+        mExtraIdChat = chat.getId();
+        getMessageChat();
     }
 }

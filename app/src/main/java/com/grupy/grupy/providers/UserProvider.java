@@ -2,6 +2,7 @@ package com.grupy.grupy.providers;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.grupy.grupy.models.User;
@@ -22,6 +23,10 @@ public class UserProvider {
         return mCollection.document(id).get();
     }
 
+    public DocumentReference getUserRealTime(String id) {
+        return mCollection.document(id);
+    }
+
     public Task<Void> create(User user) {
         return mCollection.document(user.getId()).set(user);
     }
@@ -33,6 +38,13 @@ public class UserProvider {
         map.put("image_profile", user.getImageProfile());
         map.put("image_cover", user.getImageCover());
         return mCollection.document(user.getId()).update(map);
+    }
+
+    public Task<Void> updateOnline(String idUser, boolean status) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("online", status);
+        map.put("lastConnect", new Date().getTime());
+        return mCollection.document(idUser).update(map);
     }
 
 }

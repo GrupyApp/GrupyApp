@@ -20,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.grupy.grupy.R;
@@ -29,6 +30,7 @@ import com.grupy.grupy.models.User;
 import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.PostProvider;
 import com.grupy.grupy.providers.UserProvider;
+import com.grupy.grupy.utils.ViewedMessageHelper;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -48,6 +50,8 @@ public class UserProfileActivity extends AppCompatActivity {
     PostProvider mPostProvider;
 
     MyPostAdapter mMyPostAdapter;
+
+    ListenerRegistration mListener;
 
     String mExtraIdUser;
 
@@ -97,26 +101,38 @@ public class UserProfileActivity extends AppCompatActivity {
         mMyPostAdapter = new MyPostAdapter(options, UserProfileActivity.this);
         mRecyclerView.setAdapter(mMyPostAdapter);
         mMyPostAdapter.startListening();
+        ViewedMessageHelper.updateOnline(true, UserProfileActivity.this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mMyPostAdapter.stopListening();
+        ViewedMessageHelper.updateOnline(false, UserProfileActivity.this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mListener != null) {
+            mListener.remove();
+        }
     }
 
     private void checkIfExistGroup() {
-        mPostProvider.getGroupByUser(mExtraIdUser).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        mListener = mPostProvider.getGroupByUser(mExtraIdUser).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException error) {
-                int numberGroup = queryDocumentSnapshots.size();
-                if (numberGroup > 0) {
-                    mTextViewGroupExist.setText("Groups");
-                    mTextViewGroupExist.setTextColor(Color.GRAY);
-                }
-                else {
-                    mTextViewGroupExist.setText("No groups");
-                    mTextViewGroupExist.setTextColor(Color.GRAY);
+                if (queryDocumentSnapshots != null) {
+                    int numberGroup = queryDocumentSnapshots.size();
+                    if (numberGroup > 0) {
+                        mTextViewGroupExist.setText("Groups");
+                        mTextViewGroupExist.setTextColor(Color.GRAY);
+                    }
+                    else {
+                        mTextViewGroupExist.setText("No groups");
+                        mTextViewGroupExist.setTextColor(Color.GRAY);
+                    }
                 }
             }
         });
