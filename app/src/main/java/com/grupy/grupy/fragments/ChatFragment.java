@@ -13,9 +13,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.Query;
 import com.grupy.grupy.R;
 import com.grupy.grupy.adapters.ChatsAdapter;
-import com.grupy.grupy.adapters.PostAdapter;
 import com.grupy.grupy.models.Chat;
-import com.grupy.grupy.models.Post;
 import com.grupy.grupy.providers.AuthProvider;
 import com.grupy.grupy.providers.ChatsProvider;
 
@@ -64,5 +62,13 @@ public class ChatFragment extends Fragment {
     public void onStop() {
         super.onStop();
         mAdapter.stopListening();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mAdapter.getListener() != null) {
+            mAdapter.getListener().remove();
+        }
     }
 }

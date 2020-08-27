@@ -29,8 +29,12 @@ public class MessageProvider {
         return mCollection.whereEqualTo("idChat", idChat).orderBy("timestamp", Query.Direction.ASCENDING);
     }
 
-    public Query getMessageByChatandSender(String idChat, String idSender) {
+    public Query getMessageByChatAndSender(String idChat, String idSender) {
         return mCollection.whereEqualTo("idChat", idChat).whereEqualTo("idSender", idSender).whereEqualTo("viewed", false);
+    }
+
+    public Query getLastMessage(String idChat) {
+        return mCollection.whereEqualTo("idChat", idChat).orderBy("timestamp", Query.Direction.DESCENDING).limit(1);
     }
 
     public Task<Void> updateViewed(String idDocument, boolean state) {

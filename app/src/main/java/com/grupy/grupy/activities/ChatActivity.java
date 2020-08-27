@@ -287,7 +287,7 @@ public class ChatActivity extends AppCompatActivity {
             idSender = mExtraIdUser1;
         }
 
-        mMessageProvider.getMessageByChatandSender(mExtraIdChat, idSender).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        mMessageProvider.getMessageByChatAndSender(mExtraIdChat, idSender).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
