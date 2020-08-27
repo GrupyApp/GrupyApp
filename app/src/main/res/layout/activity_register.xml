@@ -118,4 +118,13 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"/>
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:lottie_url="https://assets9.lottiefiles.com/private_files/lf30_PHmUt4.json"
+        app:lottie_loop="true"
+        app:lottie_autoPlay="true"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="20dp"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
