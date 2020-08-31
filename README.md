@@ -1,12 +1,8 @@
 # GrupyApp
 
- <a href="https://github.com/badges/shields/graphs/contributors" alt="Contributors">
-        <img src="https://img.shields.io/bitbucket/issues-raw/arnauparrilla/GrupyApp
-" /></a>
-  <a href="#backers" alt="Backers on Open Collective">
+ <a href=https://github.com/GrupyApp/GrupyApp/issues" alt="Open issues">
         <img src="https://img.shields.io/bitbucket/issues-raw/arnauparrilla/GrupyApp" /></a>
-        
-https://img.shields.io/bitbucket/issues-raw/arnauparrilla/GrupyApp
+ 
 
 
 <a href="https://github.com/badges/shields/compare/gh-pages...master">
