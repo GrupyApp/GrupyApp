@@ -1,9 +1,7 @@
 # GrupyApp
 
 <p align="center">
- <a href="https://github.com/GrupyApp/GrupyApp/issues" alt="Open issues">
-        <img src="https://img.shields.io/bitbucket/issues-raw/arnauparrilla/GrupyApp" /></a>
- 
+<img alt="GitHub last commit (branch)" src="https://img.shields.io/github/last-commit/GrupyApp/GrupyApp/master?label=last%20commit%20master">
 </p>
 
 
