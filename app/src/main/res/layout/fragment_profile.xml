@@ -34,7 +34,7 @@
                     android:id="@+id/imageViewCover"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:src="@drawable/cover_image"
+                    android:background="@color/colorAccent"
                     android:scaleType="centerCrop"
                     android:alpha="0.8"
                     android:contentDescription="cover picture"/>
@@ -109,7 +109,7 @@
                     android:layout_gravity="bottom|center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Miriam"
+                    android:text=""
                     android:textColor="@color/colorBlack"
                     android:textStyle="bold"
                     android:textSize="25dp"/>

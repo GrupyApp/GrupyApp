@@ -2,9 +2,11 @@ package com.grupy.grupy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -131,13 +133,13 @@ public class GroupDetailActivity extends AppCompatActivity {
         mSliderView.setIndicatorSelectedColor(Color.WHITE);
         mSliderView.setIndicatorUnselectedColor(Color.GRAY);
         mSliderView.setScrollTimeInSec(3);
-        mSliderView.setAutoCycle(true);
-        mSliderView.startAutoCycle();
+        mSliderView.setAutoCycle(false);
     }
 
     //get the information of the one who created the group
     private void getGroup() {
         mPostProvider.getGroupById(mExtraPostId).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
@@ -162,6 +164,12 @@ public class GroupDetailActivity extends AppCompatActivity {
                     if (documentSnapshot.contains("idUser")) {
                         mIdUser = documentSnapshot.getString("idUser");
                         getUserInfo(mIdUser);
+                    }
+                    if (mIdUser.equals(mAuthProvider.getUid())) {
+                        mFabChat.setVisibility(View.GONE);
+                    }
+                    else {
+                        mFabChat.setVisibility(View.VISIBLE);
                     }
                     instanceSlider();
                 }
