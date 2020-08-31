@@ -10,6 +10,9 @@
    
    <a href="https://github.com/GrupyApp/GrupyApp/issues" alt="GitHub issues">
         <img src="https://img.shields.io/github/issues-raw/GrupyApp/GrupyApp" /></a>
+        
+   <a href="https://github.com/GrupyApp/GrupyApp/releases" alt="GitHub issues">
+        <img src="https://img.shields.io/github/v/release/GrupyApp/GrupyApp?include_prereleases" /></a>
  
 </p>
 
