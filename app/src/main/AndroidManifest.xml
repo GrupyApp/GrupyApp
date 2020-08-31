@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.grupy.grupy">
+    package="com.grupy.lineup1">
 
     <uses-feature
         android:name="android.hardware.camera2"
@@ -17,26 +17,26 @@
         android:roundIcon="@drawable/icon_grupy"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.ChatActivity"
+        <activity android:name="com.grupy.lineup1.activities.ChatActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.UserProfileActivity"
-            android:parentActivityName=".activities.GroupDetailActivity"
+        <activity android:name="com.grupy.lineup1.activities.UserProfileActivity"
+            android:parentActivityName="com.grupy.lineup1.activities.GroupDetailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.GroupDetailActivity"
+        <activity android:name="com.grupy.lineup1.activities.GroupDetailActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.EditProfileActivity"
+        <activity android:name="com.grupy.lineup1.activities.EditProfileActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.PostActivity"
+        <activity android:name="com.grupy.lineup1.activities.PostActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.CompleteProfileActivity"
+        <activity android:name="com.grupy.lineup1.activities.CompleteProfileActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.HomeActivity"
+        <activity android:name="com.grupy.lineup1.activities.HomeActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.RegisterActivity"
+        <activity android:name="com.grupy.lineup1.activities.RegisterActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.LogInActivity"
+        <activity android:name="com.grupy.lineup1.activities.LogInActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.MainActivity"
+        <activity android:name="com.grupy.lineup1.activities.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,7 +47,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.grupy.grupy"
+            android:authorities="com.grupy.lineup1"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -56,7 +56,7 @@
         </provider>
 
         <service
-            android:name=".services.MyFirebaseMessagingClient"
+            android:name="com.grupy.lineup1.services.MyFirebaseMessagingClient"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -67,7 +67,7 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
 
-        <receiver android:name=".receivers.MessageReceiver"
+        <receiver android:name="com.grupy.lineup1.receivers.MessageReceiver"
             android:enabled="true"
             android:exported="false"/>
 

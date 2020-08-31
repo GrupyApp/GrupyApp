@@ -2,6 +2,6 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <external-path
         name="Grupy"
-        path="Android/data/com.grupy.grupy/files/Pictures"/>
+        path="Android/data/com.grupy.lineup1/files/Pictures"/>
 
 </paths>
